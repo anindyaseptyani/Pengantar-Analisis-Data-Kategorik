@@ -1,0 +1,349 @@
+---
+title: "Praktikum PADK P4"
+author: "Anindya Septyani G1401221074"
+date: "2024-09-04"
+output:
+  html_document:
+    theme: yeti
+    toc: true
+    toc_float: true
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Uji Kebebasan Chi-Square
+
+Uji Kebebasan Chi-Square digunakan untuk menentukan apakah ada hubungan yang signifikan antara 2 variabel kategorikal. Contohnya adalah untuk melihat apakah ada hubungan antara jenis kelamin dan tingkat kesibukkan.
+
+## Hipotesis
+
+-   H0 : Tidak ada hubungan antara dua variabel
+
+-   H1 : Ada hubungan antara dua variabel
+
+## Langkah-langkah
+
+1.  Menyusun Tabel Kontingensi
+
+2.  Menghitung Frekuensi yang Diharapkan (Expected Frequencies)
+
+    $$
+    E_ij = \frac {(Total Baris_i \times Total Kolom_j)}{Total Keseluruhan}
+    $$
+
+3.  Menghitung Nilai Statistik Uji Chi-Square
+
+    $$
+    x^2 = \frac {𝚺 (O_ij - E_ij)^2}{E_ij}
+    $$
+
+4.  Menentukan Derajat Kebebasan (df)
+
+    $$
+    df = (Jumlah Baris - 1) \times (Jumlah Kolom - 1)
+    $$
+
+5.  Membandingkan Nilai Chi-Square dengan Nilai Kritis
+
+    Jika nilai $X^2$ lebih besar dari nilai kritis, maka H0 ditolak
+
+```{r}
+# Data Tabel Kontingensi
+data <- matrix(c(5, 26, 4, 16, 35, 5), nrow = 2, byrow = TRUE)
+
+# Menambahkan nama baris dan kolom
+rownames(data) <- c("Wanita", "Pria")
+colnames(data) <- c("Tinggi", "Sedang", "Rendah")
+
+# Uji Chi-Square
+chisqtest <- chisq.test(data)
+
+# Hasil uji
+print(chisqtest)
+```
+
+```{r}
+# Nilai Harapan
+print(chisqtest$expected)
+```
+
+**Output:**
+
+-   X-squared: Nilai Statistik Chi-Square yang dihitung
+
+-   df = Derajat Kebebasan
+
+-   P-value = Karena P-Value \> 0.05 maka terima H0, artinya tidak ada hubungan antara jenis kelamin dan tingkat kesibukan
+
+# Uji Kehomogenan Chi-Square
+
+Uji kehomogenan Chi-Square digunakan untuk membandingkan distribusi frekuensi dari satu variabel kategorikal pada beberapa populasi atau kelompok untuk menentukan apakah distribusi frekuensi serupa di seluruh populasi.
+
+## Hipotesis
+
+-   H0 : Proporsi untuk setiap kategori variabel adalah sama di semua kelompok
+
+-   H1 : Proporsi untuk setiap kategori variabel berbeda di setidaknya satu kelompok
+
+## Langkah-langkah
+
+1.  Menyusun Tabel Kontingensi
+
+2.  Menghitung Frekuensi yang Diharapkan (Expected Frequencies)
+
+3.  Menghitung Nilai Statistik Uji Chi-Square
+
+4.  Menentukan Derajat Kebebasan
+
+5.  Membandingkan Nilai Chi-Square dengan Nilai Kritis
+
+```{r}
+# Data Tabel Kontingensi
+data2 <- matrix(c(118, 321, 281, 523, 6, 23, 286, 551, 40, 106, 96, 235), nrow = 6, byrow = TRUE)
+data2
+
+# Menambahkan nama baris dan kolom
+rownames(data2) <- c("Bachelor", "College", "Doctorate", "HS-Gard", "Master", "No HS-Grad")
+colnames(data2) <- c("Wanita", "Pria")
+
+# Uji Chi-Square untuk kehomogenan
+chisqtest2 <- chisq.test(data2)
+
+# Hasil Uji
+print(chisqtest2)
+```
+
+**Output:**
+
+Karena P-Value \< 0.05, maka H0 ditolak, artinya ada perbedaan proporsi signifikan antara jenis kelamin di berbagai tingkat pendidikan.
+
+# Latihan Soal
+
+## Soal 1: Hubungan antara Status Pekerjaan dan Preferensi Transportasi
+
+Sebuah survei dilakukan untuk mengetahui apakah ada hubungan antara status pekerjaan seseorang (pekerja penuh waktu, paruh waktu, atau tidak bekerja) dan preferensi transportasi mereka (mobil pribadi, angkutan umum, atau sepeda).
+
+**Pertanyaan: Apakah status pekerjaan seseorang memiliki hubungan yang signifikan dengan preferensi transportasi mereka?**
+
+**Jawaban:**
+
+**Hipotesis**
+
+-   H0 : Tidak ada hubungan antara status pekerjaan seseorang dengan preferensi transportasi
+
+-   H1 : Ada hubungan antara status pekerjaan seseorang dengan preferensi transportasi
+
+```{r}
+# Data Tabel Kontingensi
+soal1 <- matrix(c(45, 30, 15, 20, 40, 10, 10, 50, 20), nrow = 3, ncol = 3, byrow = TRUE)
+
+# Menambahkan nama baris dan kolom
+rownames(soal1) <- c("Pekerja Penuh Waktu", "Pekerja Paruh Waktu", "Tidak Bekerja")
+colnames(soal1) <- c("Mobil Pribadi","Angkutan Umum", "Sepeda")
+
+# Melihat Tabel Kontingensi
+print(soal1)
+```
+
+```{r}
+# Uji Chi-Square
+chisqtests1 <- chisq.test(soal1)
+print(chisqtests1)
+```
+
+```{r}
+# Nilai kritis 
+nilaikritis1 <- qchisq(1 - 0.05, 4)
+nilaikritis1
+```
+
+```{r}
+# Nilai Harapan
+print(chisqtest1$expected)
+```
+
+Karena X-squared \> Nilai kritis maka H0 ditolak, artinya ada hubungan antara status pekerjaan seseorang dengan preferensi transportasi.
+
+## Soal 2: Hubungan antara Tingkat Pendidikan dan Preferensi Pembelian Online
+
+Sebuah studi dilakukan untuk mengetahui apakah ada hubungan antara tingkat pendidikan seseorang (SD, SMP, SMA, S1) dan preferensi pembelian barang secara online (Jarang, Kadang-kadang, Sering)
+
+**Pertanyaan: Apakah tingkat pendidikan seseorang memiliki hubungan yang signifikan dengan preferensi mereka untuk pembelian barang secara online?**
+
+**Jawaban:**
+
+**Hipotesis**
+
+-   H0 : Tidak ada hubungan antara tingkat pendidikan dan preferensi pembelian online
+
+-   H1 : Ada hubungan antara tingkat pendidikan dan preferensi pembelian online
+
+```{r}
+# Data Tabel Kontingensi
+soal2 <- matrix(c(50, 20, 10, 40, 30, 30, 30, 50, 70, 20, 60, 70), nrow = 4, ncol = 3, byrow = TRUE)
+
+# Menambahkan nama baris dan kolom
+rownames(soal2) <- c("SD", "SMP", "SMA", "S1")
+colnames(soal2) <- c("Jarang", "Kadang-kadang", "Sering")
+
+# Melihat Tabel Kontingensi
+print(soal2)
+```
+
+```{r}
+# Uji Chi-Square
+chisqtests2 <- chisq.test(soal2)
+print(chisqtests2)
+```
+
+```{r}
+# Nilai Kritis
+nilaikritis2 <- qchisq(1 - 0.05, 6)
+nilaikritis2
+```
+
+```{r}
+# Nilai Harapan
+print(chisqtest2$expected)
+```
+
+Karena X-squared \> Nilai Kritis, maka H0 ditolak, artinya ada hubungan antara tingkat pendidikan dan preferensi pembelian online.
+
+## Soal 3: Hubungan antara Usia dan Penggunaan Media Sosial
+
+Sebuah survei dilakukan untuk mengetahui apakah ada hubungan antara kelompok usia (remaja, dewasa muda, dewasa) dan frekuensi penggunaan media sosial (setiap hari, seminggu sekali, sebulan sekali)
+
+**Pertanyaan: Apakah kelompok usia seseorang memiliki hubungan yang signifikan dengan frekuensi penggunaan media sosial mereka?**
+
+**Jawaban:**
+
+**Hipotesis**
+
+-   H0 : Tidak ada hubungan antara tingkat usia dan frekuensi penggunaan media sosial
+
+-   H1 : Ada hubungan antara tingkat usia dan frekuensi penggunaan media sosial
+
+```{r}
+# Data Tabel Kontingensi
+soal3 <- matrix(c(60, 30, 10, 70, 20, 10, 30, 50, 20), nrow = 3, ncol = 3, byrow = TRUE)
+
+# Menambahkan nama baris dan kolom
+rownames(soal3) <- c("Remaja", "Dewasa Muda", "Dewasa")
+colnames(soal3) <- c("Setiap Hari", "Seminggu Sekali", "Sebulan Sekali")
+
+# Melihat Tabel Kontingensi
+print(soal3)
+```
+
+```{r}
+# Uji Chi-Square
+chisqtests3 <- chisq.test(soal3)
+print(chisqtests3)
+```
+
+```{r}
+# Nilai Kritis
+nilaikritis3 <- qchisq(1 - 0.05, 4)
+nilaikritis3
+```
+
+```{r}
+# Nilai Harapan
+print(chisqtests3$expected)
+```
+
+Karena X-squared \> Nilai Kritis, maka H0 ditolak, artinya ada hubungan antara tingkat usia dan frekuensi penggunaan media sosial
+
+## Soal 4: Hubungan antara Jenis Kelamin dan Preferensi Makanan
+
+Penelitian dilakukan untuk mengetahui apakah ada hubungan antara jenis kelamin (pria, wanita) dan preferensi makanan farovit (daging, sayuran, makanan cepat saji)
+
+**Pertanyaan: Apakah jenis kelamin memiliki hubungan yang signifikan dengan preferensi makanan favorit?**
+
+**Jawaban:**
+
+**Hipotesis**
+
+-   H0 : Tidak ada hubungan antara jenis kelamin dan preferensi makanan favorit
+
+-   H1 : Ada hubungan antara jenis kelamin dan preferensi makanan favorit
+
+```{r}
+# Data Tabel Kontingensi
+soal4 <- matrix(c(80, 30, 40, 50, 70, 30), nrow = 2, ncol = 3, byrow = TRUE)
+
+# Menambahkan nama baris dan kolom
+rownames(soal4) <- c("Pria", "Wanita")
+colnames(soal4) <- c("Daging", "Sayuran", "Makanan Cepat Saji")
+
+# Melihat Tabel Kontingensi
+print(soal4)
+```
+
+```{r}
+# Uji Chi-Square
+chisqtests4 <- chisq.test(soal4)
+print(chisqtests4)
+```
+
+```{r}
+# Nilai Kritis
+nilaikritis4 <- qchisq(1 - 0.05, 2)
+nilaikritis4
+```
+
+```{r}
+# Nilai Harapan
+print(chisqtests4$expected)
+```
+
+Karena X-squared \> Nilai Kritis, maka H0 ditolak, artinya ada hubungan antara jenis kelamin dan preferensi makanan favorit
+
+## Soal 5: Hubungan antara Lokasi Tempat Tinggal dan Frekuensi Kunjungan ke Bioskop
+
+Sebuah studi dilakukan untuk melihat apakah ada hubungan antara lokasi tempat tinggal seseorang (kota besar, kota kecil, pedesaan) dan frekuensi kunjungan ke bioskop (sering, kadang-kadang, jarang)
+
+**Pertanyaan: Apakah lokasi tempat tinggal seseorang memiliki hubungan yang signifikan dengan frekuensi kunjungan mereka ke bioskop?**
+
+**Jawaban:**
+
+**Hipotesis**
+
+-   H0 : Tidak ada hubungan antara lokasi tempat tinggal dan frekuensi kunjungan ke bioskop
+
+-   H1 : Ada hubungan antara lokasi tempat tinggal dan frekuensi kunjungan ke bioskop
+
+```{r}
+# Data Tabel Kontingensi
+soal5 <- matrix(c(60, 80, 60, 30, 70, 100, 10, 30, 160), nrow = 3, ncol = 3, byrow = TRUE)
+
+# Menambahkan nama baris dan kolom
+rownames(soal5) <- c("Kota Besar", "Kota Kecil", "Pedesaan")
+colnames(soal5) <- c("Sering", "Kadang-kadang", "Jarang")
+
+# Melihat Tabel Kontingensi
+print(soal5)
+```
+
+```{r}
+# Uji Chi-Square
+chisqtests5 <- chisq.test(soal5)
+print(chisqtests5)
+```
+
+```{r}
+# Nilai Kritis
+nilaikritis5 <- qchisq(1 - 0.05, 4)
+nilaikritis5
+```
+
+```{r}
+# Nilai Harapan
+print(chisqtests5$expected)
+```
+
+Karena X-squared \> Nilai Kritis, maka H0 ditolak, artinya ada hubungan antara lokasi tempat tinggal dan frekuensi kunjungan ke bioskop
