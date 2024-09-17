@@ -1,0 +1,483 @@
+---
+title: "Praktikum PADK P5"
+author: "Anindya Septyani G1401221074"
+date: "2024-09-07"
+output: 
+  rmdformats::readthedown
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Sebaran Binomial
+
+Distribusi binomial digunakan untuk menghitung probabilitas terjadinya sejumlah kejadian sukses dalam suatu rangkaian percobaan yang identik dan independen, di mana setiap percobaan hanya memiliki dua kemungkinan hasil: sukses atau gagal. Misalkan:
+
+-   n: Jumlah percobaan
+
+-   p: Peluang sukses pada setiap percobaan
+
+-   Y: Variabel acak yang menyatakan jumlah sukses dalam n percobaan
+
+Probabilitas mendapatkan tepat y kejadian sukses diberikan oleh fungsi massa probabilitas binomial:
+
+$$
+P(Y=y)=\binom{n}{y}p^y(1-p)^{n-y}
+$$
+
+## Contoh Soal 1
+
+Misalkan sebuah dadu dilemparkan 5 kali, dan kita ingin mengetahui probabilitas munculnya angka 2 tepat sebanyak 3 kali. Maka:
+
+-   n = 5
+
+-   p = $\frac{1}{6}$ (karena hanya satu dari enam sisi dadu yang bernilai 2)
+
+-   y = 3
+
+Jawaban:
+
+```{r}
+# Input 
+n <- 5
+p <- 1/6
+y <- 3
+
+# Perhitungan
+prob1b <- dbinom(y, size = n, prob = p)
+print(prob1b)
+```
+
+## Contoh Soal 2
+
+Misalkan 75% kasus pencurian di sebuah kota disebabkan oleh kebutuhan akan narkoba. Jika kita ingin mengetahui probabilitas bahwa 2 dari 4 kasus pencurian disebabkan oleh narkoba:
+
+-   n = 4
+
+-   p = 0,75
+
+-   y = 2
+
+Jawaban:
+
+```{r}
+# Input
+n <- 4
+p <- 0.75
+y <- 2
+
+# Perhitungan
+prob2b <- dbinom(y, size = n, prob = p)
+print(prob2b)
+```
+
+```{r}
+# Input
+n <- 10
+p <- 0.4
+y <- 5
+
+# Perhitungan
+prob3b <- dbinom(y, size = n, prob = p)
+print(prob3b)
+```
+
+# Sebaran Multinomial
+
+Distribusi multinomial adalah perluasan dari distribusi binomial untuk kasus di mana setiap percobaan memiliki lebih dari dua kemungkinan hasil. Misalkan:
+
+-   $n$ = Jumlah percobaan
+
+-   $ℼ_1, ℼ_2, ...,ℼ_k$ : Peluang untuk masing-masing ketagori, dengan $\sum_{j=1}^{k}\pi_j=1$
+
+-   $n_1, n_2,...,n_k$ : Jumlah kejadian dalam masing-masing kategori
+
+Probabilitas multinomial diberikan oleh:
+
+$$
+P(Y_1=n_1,Y_2=n_2,\dots,Y_k=n_k)=\frac{n!}{n_1!n_2!\dots n_k!}\pi_1^{n-1}\pi_2^{n_2}\dots\pi_k^{n_k}
+$$
+
+## Contoh Soal
+
+Misalkan sebuah sampel acak berukuran 20 diambil dari populasi mikroprosesor, di mana 70% diantaranya baik, 25% cacat, dan 5% rusak. Probabilitas menemukan 15 mikroprosesor baik, 3 cacat, dan 2 rusak:
+
+-   $n=20$
+
+-   $ℼ_1=0.7, ℼ_2=0.25, ℼ_3=0.05$
+
+-   $n_1=15,  n_2=3,n_3=2$
+
+```{r}
+# Input
+n <- 20
+p <- c(0.7, 0.25, 0.05)
+k <- c(15, 3, 2)
+
+prob1m <- dmultinom(k, size = n, prob = p)
+print(prob1m)
+```
+
+```{r}
+# Input
+n <- 10
+p <- c(0.4, 0.1, 0.5)
+k <- c(4, 1, 5)
+
+prob2m <- dmultinom(k, size = n, prob = p)
+print(prob2m)
+```
+
+# Uji Proporsi
+
+Uji proporsi digunakan untuk menguji hipotesis mengenai proporsi populasi berdasarkan sampel yang telah diambil. Misalnya, jika sebuah survei menunjukkan bahwa 56% responden mendukung kandidat tertentu, uji proporsi dapat digunakan untuk menentukan apakah proporsi ini signifikan secara statistik.
+
+**Hipotesis:**
+
+$H_0 : p = p_0$ (proporsi populasi sama dengan nilai hipotesis)
+
+$H_1 : p ≠ p_0$ (proporsi populasi tidak sama dengan nilai hipotesis)
+
+**Statistik Uji:** Statistik uji untuk uji proporsi dihitung dengan rumus:
+
+$$
+Z= \frac {\hat{p} -p_0}{\sqrt{\frac{p_0(1-p_0)}{n}}}
+$$
+
+Dimana:
+
+-   $\hat{p}$ adalah proporsi sampel,
+
+-   $p_0$ adalah proporsi populasi yang dihipotesiskan,
+
+-   $n$ adalah ukuran sampel
+
+**Kaidah Penolakan:** Nilai $Z$ dibandingkan dengan nilai kritis $Z_{a/2}$ dari distribusi normal standar. Jika $|Z|>Z_{a/2}$ , maka kita tolak hipotesis nol $H_0$.
+
+## Contoh Soal
+
+Suatu lembaga survey mengambil contoh acak sebanyak 2000 responden dan diperoleh hasil 1120 orang diantaranya masih puas terhadap kinerja pemerintah. Apakah mayoritas responden puas dengan kinerja pemerintah?
+
+```{r}
+# Input 
+npro <- 2000
+xpro <- 1120
+p0pro <- 0.5 #proporsi yang dihipotesiskan
+```
+
+```{r}
+# Proporsi sampel
+phatpro <- xpro/npro
+phatpro
+```
+
+```{r}
+# Uji proporsi satu sampel
+z <- (phatpro - p0pro) / sqrt(p0pro * (1 - p0pro) / npro)
+z
+```
+
+```{r}
+# Nilai z kitis
+zkritis <- qnorm(1 - 0.05)
+zkritis
+```
+
+```{r}
+# Nilai p untuk uji dua sisi
+p_valuepro <- 2 * pnorm(-abs(z))
+p_valuepro
+```
+
+Karena nilai p-value \< 0,05 dan nilai Z \> nilai kritis, maka kita menolak $H_0$ dan menyimpulkan bahwa mayoritas responden puas dengan kinerja pemerintah.
+
+# Uji Wald
+
+**Pengertian:** Uji Wald digunakan untuk menguji parameter dalam model regresi. Secara khusus, ini digunakan untuk menguji apakah koefisien dari variabel independen secara signifikan berbeda dari nol.
+
+**Hipotesis:**
+
+$$
+H_0=\beta=\beta_0
+$$
+
+$$
+H_1=\beta\neq\beta_0
+$$
+
+**Statistik Uji:** Statistik uji Wald dihitung dengan rumus:
+
+$$
+W = \frac{(\hat{\beta} - \beta_0)^2}{\text{Var}(\hat{\beta})}
+$$
+
+Dimana:
+
+-   $\hat{\beta}$ adalah estimasi dari koefisien,
+
+-   $\beta_0$ adalah nilai hipotesis,
+
+-   $Var(\hat\beta)$ adalah varian dari estimasi koefisien
+
+**Kaidah Penolakan:** Bandingkan nilai statistik Wald $W$ dengan distribusi chi-square dengan derajat kebebasan 1. Jika $W > 𝑥_{⍺,1}^2$ , maka tolak $H_0$.
+
+## Contoh Soal
+
+Di dunia telekomunikasi dikenal istilah churn analysis yang bertujuan untuk melihat kemungkinan pelanggan untuk pindah ke operator lain. Misalnya, pada bulan tertentu diketahui ada sebanyak 2347 pelanggan yang keluar (churn) dari total contoh acak 60000 pelanggan. Apakah dapat kita katakan bahwa churn rate, perbandingan antara pelanggan yang churn dengan total pelanggan, adalah sebesar 4%?
+
+```{r}
+# Input
+nwald <- 60000
+xwald <- 2347
+p0wald <- 0.04 #churn rate yang dihipotesiskan
+```
+
+```{r}
+# Proporsi sampel
+phatwald <- xwald/nwald
+phatwald
+```
+
+```{r}
+# Uji Wald
+var_hat <- (phatwald * (1 - phatwald)) / nwald
+var_hat
+
+wald <- (phatwald - p0wald)^2 / var_hat
+wald
+```
+
+```{r}
+# Nilai p untuk uji wald
+p_valuewald <- 1 - pchisq(wald, df = 1)
+p_valuewald
+```
+
+Karena p-value \> 0,05, maka terima H1 dan menyimpulkan bahwa churn rate sama dengan 4%
+
+# Latihan Soal
+
+## Soal 1: Retensi Pelanggan di Aplikasi Streaming
+
+Sebuah perusahaan aplikasi streaming video ingin mengukur retensi pengguna, yaitu persentase pengguna yang terus menggunakan aplikasi setelah satu bulan berlangganan. Dari 10.000 pengguna baru yang mendaftar, diketahui bahwa 8.700 pengguna tetap menggunakan aplikasi setelah satu bulan. Apakah dapat dikatakan bahwa retensi pengguna setelah satu bulan adalah sebesar 87%?
+
+**Jawaban:**
+
+**Hipotesis**
+
+$$
+H_0:\beta=0
+$$
+
+$$
+H_1:\beta\neq0
+$$
+
+**Statistik Uji**
+
+```{r}
+# Input
+ns1 <- 10000
+xs1 <- 8700
+p0s1 <- 0.87
+```
+
+```{r}
+# Proporsi sampel
+phats1 <- xs1/ns1
+phats1
+```
+
+```{r}
+# Uji Wald
+var_hats1 <- (phats1 * (1 - phats1)) / ns1
+var_hats1
+
+walds1 <- (phats1 - p0s1)^2 / var_hats1
+walds1
+```
+
+```{r}
+# Nilai p untuk uji wald
+p_values1 <- 1 - pchisq(walds1, df = 1)
+p_values1
+```
+
+Karena, p-value \> 0,05 dan W \< Nilai kritis, maka tak tolak H0 yang artinya bahwa retensi pengguna di aplikasi streaming video setelah satu bulan adalah sebesar 87%
+
+## Soal 2: Tingkat Keberhasilan Pengobatan
+
+Dalam sebuah uji klinis untuk mengukur efektivitas pengobatan baru terhadap suatu penyakit, diketahui bahwa dari 150 pasien yang mengikuti uji klinis, 120 pasien berhasil sembuh setelah menjalani pengobatan. Apakah bisa dikatakan bahwa tingkat keberhasilan pengobatan ini adalah 80%?
+
+**Jawaban:**
+
+**Hipotesis**
+
+$$ H_0:\beta=0 $$
+
+$$ H_1:\beta\neq0 $$
+
+**Statistik Uji**
+
+```{r}
+# Input
+ns2 <- 150
+xs2 <- 120
+p0s2 <- 0.8
+```
+
+```{r}
+# Proporsi sampel
+phats2 <- xs2/ns2
+phats2
+```
+
+```{r}
+# Uji Wald
+var_hats2 <- (phats2 * (1 - phats2)) / ns2
+var_hats2
+
+walds2 <- (phats2 - p0s2)^2 / var_hats2
+walds2
+```
+
+```{r}
+# Nilai p untuk uji wald
+p_values2 <- 1 - pchisq(walds2, df = 1)
+p_values2
+```
+
+Karena, p-value \> 0,05 dan W \< Nilai kritis, maka tak tolak H0 yang artinya bahwa tingkat keberhasilan pengobatan adalah 80%
+
+## Soal 3: Konversi Pengguna di Situs E-Commerce
+
+Sebuah situs e-commerce melacak konversi pengguna, yaitu persentase pengguna yang melakukan pembelian setelah mengunjungi situs tersebut. Dalam satu bulan, dari 50.000 pengunjung, 2.500 pengunjung melakukan pembelian. Apakah dapat dikatakan bahwa tingkat konversi pengguna situs tersebut adalah 5%?
+
+**Jawaban:**
+
+**Hipotesis**
+
+$$ H_0:\beta=0 $$
+
+$$ H_1:\beta\neq0 $$
+
+**Statistik Uji**
+
+```{r}
+# Input
+ns3 <- 50000
+xs3 <- 2500
+p0s3 <- 0.05
+```
+
+```{r}
+# Proporsi sampel
+phats3 <- xs3/ns3
+phats3
+```
+
+```{r}
+# Uji Wald
+var_hats3 <- (phats3 * (1 - phats3)) / ns3
+var_hats3
+
+walds3 <- (phats3 - p0s3)^2 / var_hats3
+walds3
+```
+
+```{r}
+# Nilai p untuk uji wald
+p_values3 <- 1 - pchisq(walds3, df = 1)
+p_values3
+```
+
+Karena, p-value \> 0,05 dan W \< Nilai kritis, maka tak tolak H0 yang artinya bahwa tingkat konversi pengguna situs E-commerce tersebut adalah 5%
+
+## Soal 4: Tingkat Pengangguran di Kota X
+
+Pemerintah kota X melakukan survei terhadap tenaga kerja untuk mengukur tingkat pengangguran. Dari 30.000 penduduk yang berusia produktif, ditemukan bahwa 1.800 orang tidak memiliki pekerjaan. Apakah dapat dikatakan bahwa tingkat pengangguran di kota X adalah sebesar 6%?
+
+**Jawaban:**
+
+**Hipotesis**
+
+$$ H_0:\beta=0 $$
+
+$$ H_1:\beta\neq0 $$
+
+**Statistik Uji**
+
+```{r}
+# Input
+ns4 <- 30000
+xs4 <- 1800
+p0s4 <- 0.06
+```
+
+```{r}
+# Proporsi sampel
+phats4 <- xs4/ns4
+phats4
+```
+
+```{r}
+# Uji wald
+var_hats4 <- (phats4 * (1 - phats4)) / ns4
+var_hats4
+
+walds4 <- (phats4 - p0s4)^2 / var_hats4
+walds4
+```
+
+```{r}
+# Nilai p untuk uji wald
+p_values4 <- 1 - pchisq(walds4, df = 1)
+p_values4
+```
+
+Karena, p-value \> 0,05 dan W \< Nilai kritis, maka tak tolak H0 yang artinya bahwa tingkat pengangguran di kota X adalah sebesar 6%
+
+## Soal 5: Tingkat Partisipasi dalam Pemilu
+
+Dalam pemilihan umum di sebuah negara, dari 1.200.000 pemilih yang terdaftar, 840.000 orang hadir untuk memberikan suaranya. Apakah bisa dikatakan bahwa tingkat partisipasi dalam pemilu tersebut adalah sebesar 70%?
+
+**Jawaban:**
+
+**Hipotesis**
+
+$$ H_0:\beta=0 $$
+
+$$ H_1:\beta\neq0 $$
+
+**Statistik Uji**
+
+```{r}
+# Input
+ns5 <- 1200000
+xs5 <- 840000
+p0s5 <- 0.7
+```
+
+```{r}
+# Proporsi sampel
+phats5 <- xs5/ns5
+phats5
+```
+
+```{r}
+# Uji wald
+var_hats5 <- (phats5 * (1 - phats5)) / ns5
+var_hats5
+
+walds5 <- (phats5 - p0s5)^2 / var_hats5
+walds5
+```
+
+```{r}
+# Nilai p untuk uji wald
+p_values5 <- 1 - pchisq(walds5, df = 1)
+p_values5
+```
+
+Karena, p-value \> 0,05 dan W \< Nilai kritis, maka tak tolak H0 yang artinya bahwa tingkat partisipasi dalam pemilu tersebut adalah sebesar 70%
