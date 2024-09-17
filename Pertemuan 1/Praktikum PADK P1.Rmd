@@ -1,0 +1,94 @@
+---
+title: "Praktikum PADK P1"
+author: "Anindya Septyani G1401221074"
+date: "2024-08-15"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**CONTOH SOAL**
+
+1.  Sekelompok peneliti melaporkan penelitian tentang skor-skor daya tahan (endurance score) untuk sejumlah hewan yang dikucilkan selama 48 jam. Dengan elektroda-elektroda yang ditanam dalam hipotalamus, median skor yang dihasilkan adalah 97,5. Andaikan eksperimen itu ditiru di sebuah laboratorium lain terhadap 12 hewan, namu denan elektroda-elektroda yang ditanam dalam otak bagian depan, apakah para peneliti itu boleh menyimpulkan pada taraf nyata 0,05, bahwa median skor daya tahan hewan-hewan dengan elektroda-elektroda yang ditanam dalam otak bagian depan kurang dari 97,5?
+
+```{r}
+data1 <- c(93.6, 89.1, 97.7, 84.4, 97.8, 94.5, 88.3, 97.5, 83.7, 94.6, 85.5, 82.6)
+median_hipotesis <- 97.5
+
+#Hitung Tanda (+ atau -)
+sign_test <- sign(data1-median_hipotesis)
+
+#Uji Tanda
+library(BSDA)
+resultc1 <- SIGN.test(data1, md = median_hipotesis, alternative = "less")
+print(resultc1)
+```
+
+**LATIHAN SOAL**
+
+1.  Sekelompok peneliti menemukan bahwa konsentrasi rata-rata glukosa darah dari suatu sampel pasien diabetes tipe 2 yang menjalani diet rendah karbohidrat adalah 105 mg/dL. Misalkan suatu sampel yang terdiri atas pasien diabetes tipe 2 yang menjalani diet yang berbeda memberikan data konsentrasi glukosa data berikut: 100, 110, 108, 107, 103, 111, 109, 112, 106, 105, 113, 108, 110, 109, 107. Dapatkah disimpulkan bahwa median konsentrasi glukosa darah pasien yang menjalani diet yang berbeda ini lebih besar dari 105? Gunakan pada taraf nyata 0,05.
+
+$H_0$: M \<= 105
+
+$H_1$: M \> 105
+
+```{r}
+soal1 <- c(100, 110, 108, 107, 103, 111, 109, 112, 106, 105, 113, 108, 110, 109, 107)
+median_hipotesiss1 <- 105
+
+#Hitung Tanda (+ atau -)
+sign_tests1 <- sign(soal1-median_hipotesiss1)
+
+#Uji Tanda
+library(BSDA)
+resultss1 <- SIGN.test(soal1, md = median_hipotesiss1, alternative = "greater")
+print(resultss1)
+```
+
+*Kesimpulan : p-value \< alpha maka tolak H0 atau dapat disimpulkan bahwa cukup bukti untuk menyatakkan bahwa median lebih besar dari 105 pada taraf nyata 0,05*
+
+2.  Sekelompok peneliti menemukan bahwa rata-rata waktu belajar siswa kelas 12 di suatu sekolah adalah 3.5 jam/hari. Misalkan suatu sampel yang terdiri atas siswa kelas 12 dari sekolah yang berbeda memberikan data waktu belajar harian berikut: 3.2 jam/hari, 3.8 jam/hari, 3.6 jam/hari, 3.9 jam/hari, 3.4 jam/hari, 4.0 jam/hari, 3.7 jam/hari, 3.5 jam/hari, 3.9 jam/hari, 3.3 jam/hari, 4.1 jam/hari, 3.8 jam/hari, 3.6 jam/hari, 3.7 jam/hari, 3.5 jam/hari? Apakah dapat disimpulkan bahwa median waktu belajar siswa kelas 12 di suatu sekolah tersebut lebih besar dari 3.5 jam/hari?gunakan taraf nyata 0,05?
+
+$H_0$: M \<= 3,5
+
+$H_1$: M \> 3,5
+
+```{r}
+soal2 <- c(3.2, 3.8, 3.6, 3.9, 3.4, 4.0, 3.7, 3.5, 3.9, 3.3, 4.1, 3.8, 3.6, 3.7, 3.5)
+median_hipotesiss2 <- 3.5
+
+#Hitung Tanda (+ atau -)
+sign_tests2 <- sign(soal2-median_hipotesis2)
+
+#Uji Tanda
+library(BSDA)
+resultss2 <- SIGN.test(soal2, md = median_hipotesis2, alternative = "greater")
+print(resultss2)
+```
+
+*Kesimpulan : p-value \< alpha maka tolak H0 atau dapat disimpulkan bahwa cukup bukti untuk menyatakkan* *median waktu belajar siswa kelas 12 di suatu sekolah tersebut lebih besar dari 3.5 jam/hari pada taraf nyata 0,05*
+
+tidak cukup bukti apabila p-value mendekati 0,05 , gunakan uji lanjut
+
+3.  Sekelompok peneliti menemukan bahwa tekanan darah sistolik rata-rata pasien hipertensi yang mengkonsumsi obat A selama 6 bulan adalah 130 mmHg. Misalkan suatu sampel yang terdiri atas pasien hipertensi yang mengkonsumsi obat B memberikan data tekanan darah sistolik berikut: 128 mmHg, 132 mmHg, 135 mmHg, 130 mmHg, 129 mmHg, 131 mmHg, 134 mmHg, 136 mmHg, 133 mmHg, 127 mmHg, 137 mmHg, 132 mmHg, 135 mmHg, 131 mmHg, 134 mmHg. Apakah dapat disimpulkan bahwa median tekanan darah sistolik pasien yang mengkonsumsi obat B lebih tinggi dari 130 mmHg? gunakan pada taraf nyata 0.05.
+
+$H_0$: M \<= 130
+
+$H_1$: M \> 130
+
+```{r}
+soal3 <-  c(128 , 132 , 135 , 130 , 129 , 131 , 134 , 136 , 133 , 127 , 137 , 132 , 135 , 131 , 134)
+median_hipotesiss3 <- 130
+
+#Hitung Tanda (+ atau -)
+sign_tests3 <- sign(soal3-median_hipotesiss3)
+
+#Uji Tanda
+library(BSDA)
+resultss3 <- SIGN.test(soal3, md = median_hipotesiss3, alternative = "greater")
+print(resultss3)
+```
+
+Kesimpulan : p-value \< alpha maka tolak H0 atau dapat disimpulkan bahwa cukup bukti untuk menyatakkan median tekanan darah sistolik pasien yang mengkonsumsi obat B lebih tinggi dari 130 mmHg pada taraf nyata 0,05
