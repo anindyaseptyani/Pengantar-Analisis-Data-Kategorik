@@ -1,0 +1,520 @@
+---
+title: "Praktikum PADK P6"
+author: "Anindya Septyani G1401221074"
+date: "2024-09-17"
+output: 
+  html_document:
+    theme: simplex
+    toc: yes
+    toc_float:
+      collapsed: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Metriks Performansi Uji Diagnostik
+
+## Tabel Kontingensi
+
+Tabel kontingensi adalah tabel yang digunakan untuk menunjukkan frekuensi observasi dari kombinasi variabel kategori. Dalam konteks uji diagnostik, tabel ini membantu kita menganalisis hubungan antara dua variabel, seperti hasil prediksi dan kondisi aktual.
+
+Contoh tabel kontingensi dari data uji diagnostik adalah sebagai berikut:
+
++----------------+------------------------+------------------------+---------------+
+| Hasil Prediksi | Kondisi Aktual Positif | Kondisi Aktual Negatif | Total         |
++:==============:+:======================:+:======================:+:=============:+
+| Positif        | a                      | b                      | a + b         |
+|                |                        |                        |               |
+| Negatif        | c                      | d                      | c + d         |
++----------------+------------------------+------------------------+---------------+
+| Total          | a + c                  | b + d                  | a + b + c + d |
++----------------+------------------------+------------------------+---------------+
+
+Dimana:
+
+-   a adalah True Positive (TP): Kasus yang diprediksi positif dan memang benar positif
+
+-   b adalah False Positive (FP): Kasus yang diprediksi positif tetapi sebenarnya negatif
+
+-   c adalah False Negative (FN): Kasus yang diprediksi negatif tetapi sebenarnya positif
+
+-   d adalah True Negative (TN): Kasus yang diprediksi negatif dan memang benar negatif
+
+## Metriks Performansi Uji Diagnostik
+
+Dari tabel kontingensi, kita dapat menghitung beberapa metrik penting untuk mengevaluasi performa sebuah uji diagnostik:
+
+### Akurasi 
+
+Akurasi adalah ukuran proporsi prediksi yang benar (baik positif maupun negatif) terhadap total jumlah prediksi.
+
+Secara matematis, akurasi dinyatakan sebagai:
+
+$$
+\text{Akurasi} = \frac{a+d}{a+b+c+d}
+$$
+
+### Sensitivitas (Recall)
+
+Sensitivitas atau recall adalah kemampuan tes untuk mendeteksi semua kasus positif yang sebenarnya. Ini adalah proporsi dari semua kasus aktual positif yang teridentifikasi dengan benar sebagai positif. Rumusnya adalah:
+
+$$
+\text{Sensitivitas} = \frac{a}{a+c}
+$$
+
+Sensitivitas memberikan informasi tentang seberapa baik tes tersebut dalam mengidentifikasi kondisi positif
+
+### Spesifisitas
+
+Spesifitas mengukur kemampuan tes untuk mendeteksi semua kasus negatif yang sebenarnya, yaitu proporsi dari semua kasus aktual negatif yang diidentifikasi dengan benar sebagai negatif. Rumusnya adalah:
+
+$$
+\text{Spesifisitas} = \frac{d}{b+d}
+$$
+
+Spesifisitas penting ketika kita ingin menimalkan kesalahan pada pengenalan kasus negatif.
+
+### Presisi
+
+Presisi juga dikenal sebagai Positive Predictive Value (PPV) adalah proporsi dari semua prediksi positif yang benar-benar positif. Presisi memberikan gambaran tentang seberapa akurat prediksi positif yang dibuat. Rumusnya adalah:
+
+$$
+\text{Presisi} = \frac{a}{a+b}
+$$
+
+Presisi penting ketika kita ingin memastikan bahwa prediksi positif kita memang benar
+
+### Contoh Penggunaan
+
+Misalkan kita memiliki hasil dari rapid test Covid-19 seperti berikut:
+
++------------------+------------------+------------------+-------+
+| Hasil Rapid Test | Positif (Aktual) | Negatif (Aktual) | Total |
++:================:+:================:+:================:+:=====:+
+| Positif          | 10               | 45               | 55    |
+|                  |                  |                  |       |
+| Negatif          | 50               | 95               | 145   |
++------------------+------------------+------------------+-------+
+| Total            | 60               | 140              | 200   |
++------------------+------------------+------------------+-------+
+
+Untuk menghitung akurasi, sensitivitas, spesifisitas, dan presisi menggunakan data di atas:
+
+```{r}
+rapid_test <- matrix(c(10, 45, 50, 95), nrow = 2, byrow = TRUE,
+                     dimnames = list("Prediksi" = c("Positif", "Negatif"),
+                                     "Aktual" = c("Positif", "Negatif")))
+print(rapid_test)
+```
+
+```{r}
+# Menghitung metrik-metrik performa
+TP <- rapid_test["Positif", "Positif"] #True Positive
+FP <- rapid_test["Positif", "Negatif"] #False Positive
+FN <- rapid_test["Negatif", "Positif"] #False Negative
+TN <- rapid_test["Negatif", "Negatif"] #True Negative
+```
+
+```{r}
+# Akurasi
+akurasi <- (TP + TN) / sum(rapid_test)
+print(paste("Akurasi:", akurasi))
+```
+
+Perhitungan manual:
+
+$$
+\text{Akurasi}=\frac{10+95}{200}=\frac{105}{200}=0.525
+$$
+
+```{r}
+# Sensitivitas (Recall)
+sensitivitas <- TP / (TP + FN)
+print(paste("Sensitivitas:", sensitivitas))
+```
+
+Perhitungan manual:
+
+$$
+\text{Sensitivitas}=\frac{10}{10+50}=\frac{10}{60}\approx0.167
+$$
+
+```{r}
+# Spesifisitas
+spesifisitas <- TN / (TN + FP)
+print(paste("Spesifisitas:", spesifisitas))
+```
+
+Perhitungan manual:
+
+$$
+\text{Spesifisitas}=\frac{95}{45+95}=\frac{95}{140}\approx0.679
+$$
+
+```{r}
+# Presisi (Precision)
+presisi <- TP / (TP + FP)
+print(paste("Presisi:", presisi))
+```
+
+Perhitungan manual:
+
+$$
+\text{Presisi}=\frac{10}{10+45}=\frac{10}{55}\approx0.182
+$$
+
+## Latihan Soal
+
+### Soal 1 : Deteksi Penyakit Diabetes
+
+Sebuah rumah sakit melakukan tes diagnostik untuk mendeteksi diabetes pada 300 pasien. Hasil dari tes tersebut adalah sebagai berikut
+
++--------------------+------------------+------------------+----------------+
+| Hasil Tes Diabetes | Positif (Aktual) | Negatif (Aktual) | Total          |
++:==================:+:================:+:================:+:==============:+
+| Positif            | 50               | 30               | 80             |
+|                    |                  |                  |                |
+| Negatif            | 20               | 200              | 220            |
++--------------------+------------------+------------------+----------------+
+| Total              | 70               | 230              | 300            |
++--------------------+------------------+------------------+----------------+
+
+Hitunglah akurasi, sensitivitas, spesifisitas, dan presisi dari tes diagnostik ini
+
+**Jawab:**
+
+```{r}
+# Input
+diabetes <- matrix(c(50, 30, 20, 200), nrow = 2, byrow = TRUE,
+                     dimnames = list("Prediksi" = c("Positif", "Negatif"),
+                                     "Aktual" = c("Positif", "Negatif")))
+print(diabetes)
+```
+
+```{r}
+# Menghitung metrik-metrik performa
+TP1 <- diabetes["Positif", "Positif"] #True Positive
+TP1
+
+FP1 <- diabetes["Positif", "Negatif"] #False Positive
+FP1
+
+FN1 <- diabetes["Negatif", "Positif"] #False Negative
+FN1
+
+TN1 <- diabetes["Negatif", "Negatif"] #True Negative
+TN1
+```
+
+```{r}
+# Akurasi
+akurasi1 <- (TP1 + TN1) / sum(diabetes)
+print(paste("Akurasi:", akurasi1))
+```
+
+Perhitungan manual:
+
+$$
+\text{Akurasi}=\frac{50 + 200}{300}=\frac{250}{300}=0.833
+$$
+
+```{r}
+# Sensitivitas (Recall)
+sensitivitas1 <- TP1 / (TP1 + FN1)
+print(paste("Sensitivitas:", sensitivitas1))
+```
+
+Perhitungan manual:
+
+$$
+\text{Sensitivitas}=\frac{50}{50+20}=\frac{50}{70}=0.714
+$$
+
+```{r}
+# Spesifisitas
+spesifisitas1 <- TN1 / (TN1 + FP1)
+print(paste("Spesifisitas:", spesifisitas1))
+```
+
+Perhitungan manual:
+
+$$
+\text{Spesifisitas}=\frac{200}{200+30}=\frac{200}{230}=0.869
+$$
+
+```{r}
+# Presisi (Precision)
+presisi1 <- TP1 / (TP1 + FP1)
+print(paste("Presisi:", presisi1))
+```
+
+Perhitungan manual:
+
+$$
+\text{Presisi}=\frac{50}{50+30}=\frac{50}{80}=0.625
+$$
+
+### Soal 2 : Pengujian Efektivitas Vaksin Influenza
+
+Sebuah uji klinis dilakukan untuk mengevaluasi efektivitas vaksin influenza pada 400 orang. Hasil pengujian adalah sebagai berikut:
+
++------------------+---------------------+---------------------------+-------+
+| Status Vaksinasi | Terinfeksi (Aktual) | Tidak Terinfeksi (Aktual) | Total |
++:================:+:===================:+:=========================:+:=====:+
+| Vaksinasi        | 10                  | 190                       | 200   |
+|                  |                     |                           |       |
+| Tidak Vaksinasi  | 50                  | 150                       | 200   |
++------------------+---------------------+---------------------------+-------+
+| Total            | 60                  | 340                       | 400   |
++------------------+---------------------+---------------------------+-------+
+
+Tentukan akurasi, sensitivitas, spesifisitas, dan presisi dari vaksin ini dalam mencegah infeksi influenza
+
+**Jawab:**
+
+```{r}
+# Input
+influenza <- matrix(c(10, 190, 50, 150), nrow = 2, byrow = TRUE,
+                    dimnames = list("Prediksi" = c("Positif", "Negatif"),
+                                    "Aktual" = c("Positif", "Negatif")))
+print(influenza)
+```
+
+```{r}
+# Menghitung metrik-metrik performa
+TP2 <- influenza["Positif", "Positif"] #True Positive
+TP2
+
+FP2 <- influenza["Positif", "Negatif"] #False Positive
+FP2
+
+FN2 <- influenza["Negatif", "Positif"] #False Negative
+FN2
+
+TN2 <- influenza["Negatif", "Negatif"] #True Negative
+TN2
+```
+
+```{r}
+# Akurasi
+akurasi2 <- (TP2 + TN2) / sum(influenza)
+print(paste("Akurasi:", akurasi2))
+```
+
+Perhitungan manual:
+
+$$
+\text{Akurasi}=\frac{10+150}{400}=\frac{160}{400}=0.4
+$$
+
+```{r}
+# Sensitivitas (Recall)
+sensitivitas2 <- TP2 / (TP2 + FN2)
+print(paste("Sensitivitas:", sensitivitas2))
+```
+
+Perhitungan manual:
+
+$$
+\text{Sensitivitas}=\frac{10}{10+50}=\frac{10}{60}=0.167
+$$
+
+```{r}
+# Spesifisitas
+spesifisitas2 <- TN2 / (TN2 + FP2)
+print(paste("Spesifisitas:", spesifisitas2))
+```
+
+Perhitungan manual:
+
+$$
+\text{Spesifisitas}=\frac{150}{150+190}=\frac{150}{340}=0.441
+$$
+
+```{r}
+# Presisi (Precision)
+presisi2 <- TP2 / (TP2 + FP2)
+print(paste("Presisi:", presisi2))
+```
+
+Perhitungan manual:
+
+$$
+\text{Presisi}=\frac{10}{10+190}=\frac{10}{200}=0.05
+$$
+
+### Soal 3 : Evaluasi Alat Tes Kehamilan
+
+Suatu alat tes kehamilan digunakan pada 250 wanita untuk mendeteksi kehamilan. Hasil pengujian menunjukkan:
+
++---------------------+----------------+----------------------+-------+
+| Hasil Tes Kehamilan | Hamil (Aktual) | Tidak Hamil (Aktual) | Total |
++:===================:+:==============:+:====================:+:=====:+
+| Positif             | 30             | 15                   | 45    |
+|                     |                |                      |       |
+| Negatif             | 10             | 195                  | 205   |
++---------------------+----------------+----------------------+-------+
+| Total               | 40             | 210                  | 250   |
++---------------------+----------------+----------------------+-------+
+
+Tentukan akurasi, sensitivitas, spesifisitas, dan presisi dari vaksin ini dalam mencegah infeksi influenza
+
+**Jawab:**
+
+```{r}
+# Input 
+hamil <- matrix(c(30, 15, 10, 195), nrow = 2, byrow = TRUE,                   
+                dimnames = list("Prediksi" = c("Positif", "Negatif"),                                                 "Aktual" = c("Positif", "Negatif"))) 
+print(hamil)
+```
+
+```{r}
+# Menghitung metrik-metrik performa 
+TP3 <- hamil["Positif", "Positif"] #True Positive 
+TP3
+
+FP3 <- hamil["Positif", "Negatif"] #False Positive 
+FP3
+
+FN3 <- hamil["Negatif", "Positif"] #False Negative 
+FN3  
+
+TN3 <- hamil["Negatif", "Negatif"] #True Negative 
+TN3
+```
+
+```{r}
+# Akurasi 
+akurasi3 <- (TP3 + TN3) / sum(hamil) 
+print(paste("Akurasi:", akurasi3))
+```
+
+Perhitungan manual:
+
+$$ \text{Akurasi}=\frac{30+195}{250}=\frac{225}{250}=0.9 $$
+
+```{r}
+# Sensitivitas (Recall) 
+sensitivitas3 <- TP3 / (TP3 + FN3) 
+print(paste("Sensitivitas:", sensitivitas3))
+```
+
+Perhitungan manual:
+
+$$ \text{Sensitivitas}=\frac{30}{30+10}=\frac{30}{40}=0.75 $$
+
+```{r}
+# Spesifisitas 
+spesifisitas3 <- TN3 / (TN3 + FP3) 
+print(paste("Spesifisitas:", spesifisitas3))
+```
+
+Perhitungan manual:
+
+$$ \text{Spesifisitas}=\frac{195}{195+15}=\frac{195}{210}=0.928 $$
+
+```{r}
+# Presisi (Precision) 
+presisi3 <- TP3 / (TP3 + FP3) 
+print(paste("Presisi:", presisi3))
+```
+
+Perhitungan manual:
+
+$$ \text{Presisi}=\frac{30}{30+15}=\frac{30}{45}=0.67 $$
+
+### Soal 4 : Deteksi Penyakit Jantung pada Pemeriksaan Rutin
+
+Pada sebuah klinik, 500 pasien menjalani pemeriksaan rutin untuk mendeteksi penyakit jantung. Hasil pemeriksaan adalah sebagai berikut:
+
++-------------------+---------------------------+-------------------------------------+-------+
+| Hasil Pemeriksaan | Penyakit Jantung (Aktual) | Tidak Ada Penyakit Jantung (Aktual) | Total |
++:=================:+:=========================:+:===================================:+:=====:+
+| Positif           | 40                        | 60                                  | 100   |
+|                   |                           |                                     |       |
+| Negatif           | 20                        | 380                                 | 400   |
++-------------------+---------------------------+-------------------------------------+-------+
+| Total             | 60                        | 440                                 | 500   |
++-------------------+---------------------------+-------------------------------------+-------+
+
+Tentukan akurasi, sensitivitas, spesifisitas, dan presisi dari vaksin ini dalam mencegah infeksi influenza
+
+**Jawab:**
+
+```{r}
+# Input 
+jantung <- matrix(c(40, 60, 20, 380), nrow = 2, byrow = TRUE,                 
+                  dimnames = list("Prediksi" = c("Positif", "Negatif"),                                                 "Aktual" = c("Positif", "Negatif"))) 
+print(jantung)
+```
+
+```{r}
+# Menghitung metrik-metrik performa 
+TP4 <- jantung["Positif", "Positif"] #True Positive 
+TP4
+
+FP4 <- jantung["Positif", "Negatif"] #False Positive 
+FP4
+
+FN4 <- jantung["Negatif", "Positif"] #False Negative 
+FN4
+
+TN4 <- jantung["Negatif", "Negatif"] #True Negative 
+TN4
+```
+
+```{r}
+# Akurasi 
+akurasi4 <- (TP4 + TN4) / sum(jantung) 
+print(paste("Akurasi:", akurasi4))
+```
+
+Perhitungan manual:
+
+$$ \text{Akurasi}=\frac{40+380}{500}=\frac{420}{500}=0.84 $$
+
+```{r}
+# Sensitivitas (Recall) 
+sensitivitas4 <- TP4 / (TP4 + FN4) 
+print(paste("Sensitivitas:", sensitivitas4))
+```
+
+Perhitungan manual:
+
+$$ \text{Sensitivitas}=\frac{40}{40+20}=\frac{40}{60}=0.67 $$
+
+```{r}
+# Spesifisitas 
+spesifisitas4 <- TN4 / (TN4 + FP4) 
+print(paste("Spesifisitas:", spesifisitas4))
+```
+
+Perhitungan manual:
+
+$$ \text{Spesifisitas}=\frac{380}{380+60}=\frac{380}{440}=0.863 $$
+
+```{r}
+# Presisi (Precision) 
+presisi4 <- TP4 / (TP4 + FP4) 
+print(paste("Presisi:", presisi4))
+```
+
+Perhitungan manual:
+
+$$ \text{Presisi}=\frac{40}{40+60}=\frac{40}{100}=0.4 $$
+
+### Soal 5 : Pengujian Efektivitas Masker dalam Mencegah Penyebaran Virus
+
+Sebuah studi dilakukan untuk mengukur efektivitas menggunakan masker dalam mencegah penyebaran virus di antara 600 orang. Hasil Studi sebagai berikut. Hasil adalah sebagai berikut:
+
++--------------------------+---------------------+---------------------------+-------+
+| Penggunaan Masker        | Terinfeksi (Aktual) | Tidak Terenfeksi (Aktual) | Total |
++==========================+=====================+===========================+=======+
+| Menggunakan Masker       | 30                  | 270                       | 300   |
+|                          |                     |                           |       |
+| Tidak Menggunakan Masker |                     |                           | 300   |
++--------------------------+---------------------+---------------------------+-------+
+| Total                    |                     |                           | 600   |
++--------------------------+---------------------+---------------------------+-------+
