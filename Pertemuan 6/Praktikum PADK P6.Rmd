@@ -46,7 +46,7 @@ Dimana:
 
 Dari tabel kontingensi, kita dapat menghitung beberapa metrik penting untuk mengevaluasi performa sebuah uji diagnostik:
 
-### Akurasi 
+### Akurasi
 
 Akurasi adalah ukuran proporsi prediksi yang benar (baik positif maupun negatif) terhadap total jumlah prediksi.
 
@@ -90,15 +90,15 @@ Presisi penting ketika kita ingin memastikan bahwa prediksi positif kita memang 
 
 Misalkan kita memiliki hasil dari rapid test Covid-19 seperti berikut:
 
-+------------------+------------------+------------------+-------+
-| Hasil Rapid Test | Positif (Aktual) | Negatif (Aktual) | Total |
-+:================:+:================:+:================:+:=====:+
-| Positif          | 10               | 45               | 55    |
-|                  |                  |                  |       |
-| Negatif          | 50               | 95               | 145   |
-+------------------+------------------+------------------+-------+
-| Total            | 60               | 140              | 200   |
-+------------------+------------------+------------------+-------+
++------------------+------------------+------------------+--------------+
+| Hasil Rapid Test | Positif (Aktual) | Negatif (Aktual) | Total        |
++:================:+:================:+:================:+:============:+
+| Positif          | 10               | 45               | 55           |
+|                  |                  |                  |              |
+| Negatif          | 50               | 95               | 145          |
++------------------+------------------+------------------+--------------+
+| Total            | 60               | 140              | 200          |
++------------------+------------------+------------------+--------------+
 
 Untuk menghitung akurasi, sensitivitas, spesifisitas, dan presisi menggunakan data di atas:
 
@@ -260,15 +260,15 @@ $$
 
 Sebuah uji klinis dilakukan untuk mengevaluasi efektivitas vaksin influenza pada 400 orang. Hasil pengujian adalah sebagai berikut:
 
-+------------------+---------------------+---------------------------+-------+
-| Status Vaksinasi | Terinfeksi (Aktual) | Tidak Terinfeksi (Aktual) | Total |
-+:================:+:===================:+:=========================:+:=====:+
-| Vaksinasi        | 10                  | 190                       | 200   |
-|                  |                     |                           |       |
-| Tidak Vaksinasi  | 50                  | 150                       | 200   |
-+------------------+---------------------+---------------------------+-------+
-| Total            | 60                  | 340                       | 400   |
-+------------------+---------------------+---------------------------+-------+
++------------------+---------------------+---------------------------+--------------+
+| Status Vaksinasi | Terinfeksi (Aktual) | Tidak Terinfeksi (Aktual) | Total        |
++:================:+:===================:+:=========================:+:============:+
+| Vaksinasi        | 10                  | 190                       | 200          |
+|                  |                     |                           |              |
+| Tidak Vaksinasi  | 50                  | 150                       | 200          |
++------------------+---------------------+---------------------------+--------------+
+| Total            | 60                  | 340                       | 400          |
++------------------+---------------------+---------------------------+--------------+
 
 Tentukan akurasi, sensitivitas, spesifisitas, dan presisi dari vaksin ini dalam mencegah infeksi influenza
 
@@ -349,15 +349,15 @@ $$
 
 Suatu alat tes kehamilan digunakan pada 250 wanita untuk mendeteksi kehamilan. Hasil pengujian menunjukkan:
 
-+---------------------+----------------+----------------------+-------+
-| Hasil Tes Kehamilan | Hamil (Aktual) | Tidak Hamil (Aktual) | Total |
-+:===================:+:==============:+:====================:+:=====:+
-| Positif             | 30             | 15                   | 45    |
-|                     |                |                      |       |
-| Negatif             | 10             | 195                  | 205   |
-+---------------------+----------------+----------------------+-------+
-| Total               | 40             | 210                  | 250   |
-+---------------------+----------------+----------------------+-------+
++---------------------+----------------+----------------------+--------------+
+| Hasil Tes Kehamilan | Hamil (Aktual) | Tidak Hamil (Aktual) | Total        |
++:===================:+:==============:+:====================:+:============:+
+| Positif             | 30             | 15                   | 45           |
+|                     |                |                      |              |
+| Negatif             | 10             | 195                  | 205          |
++---------------------+----------------+----------------------+--------------+
+| Total               | 40             | 210                  | 250          |
++---------------------+----------------+----------------------+--------------+
 
 Tentukan akurasi, sensitivitas, spesifisitas, dan presisi dari vaksin ini dalam mencegah infeksi influenza
 
@@ -429,15 +429,15 @@ $$ \text{Presisi}=\frac{30}{30+15}=\frac{30}{45}=0.67 $$
 
 Pada sebuah klinik, 500 pasien menjalani pemeriksaan rutin untuk mendeteksi penyakit jantung. Hasil pemeriksaan adalah sebagai berikut:
 
-+-------------------+---------------------------+-------------------------------------+-------+
-| Hasil Pemeriksaan | Penyakit Jantung (Aktual) | Tidak Ada Penyakit Jantung (Aktual) | Total |
-+:=================:+:=========================:+:===================================:+:=====:+
-| Positif           | 40                        | 60                                  | 100   |
-|                   |                           |                                     |       |
-| Negatif           | 20                        | 380                                 | 400   |
-+-------------------+---------------------------+-------------------------------------+-------+
-| Total             | 60                        | 440                                 | 500   |
-+-------------------+---------------------------+-------------------------------------+-------+
++-------------------+---------------------------+-------------------------------------+-------------+
+| Hasil Pemeriksaan | Penyakit Jantung (Aktual) | Tidak Ada Penyakit Jantung (Aktual) | Total       |
++:=================:+:=========================:+:===================================:+:===========:+
+| Positif           | 40                        | 60                                  | 100         |
+|                   |                           |                                     |             |
+| Negatif           | 20                        | 380                                 | 400         |
++-------------------+---------------------------+-------------------------------------+-------------+
+| Total             | 60                        | 440                                 | 500         |
++-------------------+---------------------------+-------------------------------------+-------------+
 
 Tentukan akurasi, sensitivitas, spesifisitas, dan presisi dari vaksin ini dalam mencegah infeksi influenza
 
@@ -509,12 +509,77 @@ $$ \text{Presisi}=\frac{40}{40+60}=\frac{40}{100}=0.4 $$
 
 Sebuah studi dilakukan untuk mengukur efektivitas menggunakan masker dalam mencegah penyebaran virus di antara 600 orang. Hasil Studi sebagai berikut. Hasil adalah sebagai berikut:
 
-+--------------------------+---------------------+---------------------------+-------+
-| Penggunaan Masker        | Terinfeksi (Aktual) | Tidak Terenfeksi (Aktual) | Total |
-+==========================+=====================+===========================+=======+
-| Menggunakan Masker       | 30                  | 270                       | 300   |
-|                          |                     |                           |       |
-| Tidak Menggunakan Masker |                     |                           | 300   |
-+--------------------------+---------------------+---------------------------+-------+
-| Total                    |                     |                           | 600   |
-+--------------------------+---------------------+---------------------------+-------+
++--------------------------+---------------------+---------------------------+--------------+
+| Penggunaan Masker        | Terinfeksi (Aktual) | Tidak Terenfeksi (Aktual) | Total        |
++==========================+=====================+===========================+==============+
+| Menggunakan Masker       | 30                  | 270                       | 300          |
+|                          |                     |                           |              |
+| Tidak Menggunakan Masker | 70                  | 230                       | 300          |
++--------------------------+---------------------+---------------------------+--------------+
+| Total                    | 100                 | 500                       | 600          |
++--------------------------+---------------------+---------------------------+--------------+
+
+Hitunglah akurasi, sensitivitas, spesifisitas, dan presisi dari vaksin ini dalam mencegah infeksi influenza
+
+**Jawab:**
+
+```{r}
+# Input  
+masker <- matrix(c(30, 270, 70, 230), nrow = 2, byrow = TRUE,                                    dimnames = list("Prediksi" = c("Positif", "Negatif"),                                                 "Aktual" = c("Positif", "Negatif")))  
+print(masker)
+```
+
+```{r}
+# Menghitung metrik-metrik performa  
+TP5 <- masker["Positif", "Positif"] #True Positive  
+TP5
+
+FP5 <- masker["Positif", "Negatif"] #False Positive  
+FP5  
+
+FN5 <- masker["Negatif", "Positif"] #False Negative  
+FN5  
+
+TN5 <- masker["Negatif", "Negatif"] #True Negative  
+TN5
+```
+
+```{r}
+# Akurasi  
+akurasi5 <- (TP5 + TN5) / sum(masker)  
+print(paste("Akurasi:", akurasi5))
+```
+
+Perhitungan manual:
+
+$$ \text{Akurasi}=\frac{30+230}{600}=\frac{260}{500}=0.433 $$
+
+```{r}
+# Sensitivitas (Recall)  
+sensitivitas5 <- TP5 / (TP5 + FN5)  
+print(paste("Sensitivitas:", sensitivitas5))
+```
+
+Perhitungan manual:
+
+$$ \text{Sensitivitas}=\frac{30}{30+70}=\frac{30}{100}=0.3 $$
+
+```{r}
+# Spesifisitas  
+spesifisitas5 <- TN5 / (TN5 + FP5)  
+print(paste("Spesifisitas:", spesifisitas5))
+```
+
+Perhitungan manual:
+
+$$ \text{Spesifisitas}=\frac{230}{230+270}=\frac{230}{500}=0.46 $$
+
+```{r}
+# Presisi (Precision)  
+presisi5 <- TP5 / (TP5 + FP5)  
+print(paste("Presisi:", presisi5))
+```
+
+Perhitungan manual:
+
+$$ \text{Presisi}=\frac{30}{30+270}=\frac{30}{300}=0.1 $$
