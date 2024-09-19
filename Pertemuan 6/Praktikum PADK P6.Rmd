@@ -171,17 +171,17 @@ $$
 
 Sebuah rumah sakit melakukan tes diagnostik untuk mendeteksi diabetes pada 300 pasien. Hasil dari tes tersebut adalah sebagai berikut
 
-+--------------------+------------------+------------------+----------------+
-| Hasil Tes Diabetes | Positif (Aktual) | Negatif (Aktual) | Total          |
-+:==================:+:================:+:================:+:==============:+
-| Positif            | 50               | 30               | 80             |
-|                    |                  |                  |                |
-| Negatif            | 20               | 200              | 220            |
-+--------------------+------------------+------------------+----------------+
-| Total              | 70               | 230              | 300            |
-+--------------------+------------------+------------------+----------------+
++--------------------+------------------+------------------+--------------+
+| Hasil Tes Diabetes | Positif (Aktual) | Negatif (Aktual) | Total        |
++:==================:+:================:+:================:+:============:+
+| Positif            | 50               | 30               | 80           |
+|                    |                  |                  |              |
+| Negatif            | 20               | 200              | 220          |
++--------------------+------------------+------------------+--------------+
+| Total              | 70               | 230              | 300          |
++--------------------+------------------+------------------+--------------+
 
-Hitunglah akurasi, sensitivitas, spesifisitas, dan presisi dari tes diagnostik ini
+Hitunglah akurasi, sensitivitas, spesifisitas, dan presisi dari tes diagnostik untuk mendeteksi penyakit diabetes.
 
 **Jawab:**
 
@@ -277,23 +277,23 @@ Tentukan akurasi, sensitivitas, spesifisitas, dan presisi dari vaksin ini dalam 
 ```{r}
 # Input
 influenza <- matrix(c(10, 190, 50, 150), nrow = 2, byrow = TRUE,
-                    dimnames = list("Prediksi" = c("Positif", "Negatif"),
-                                    "Aktual" = c("Positif", "Negatif")))
+                    dimnames = list("Prediksi" = c("Vaksinasi", "Tidak Vaksinasi"),
+                                    "Aktual" = c("Terinfeksi", "Tidak Terinfeksi")))
 print(influenza)
 ```
 
 ```{r}
 # Menghitung metrik-metrik performa
-TP2 <- influenza["Positif", "Positif"] #True Positive
+TP2 <- influenza["Vaksinasi", "Terinfeksi"] #True Positive
 TP2
 
-FP2 <- influenza["Positif", "Negatif"] #False Positive
+FP2 <- influenza["Vaksinasi", "Tidak Terinfeksi"] #False Positive
 FP2
 
-FN2 <- influenza["Negatif", "Positif"] #False Negative
+FN2 <- influenza["Tidak Vaksinasi", "Terinfeksi"] #False Negative
 FN2
 
-TN2 <- influenza["Negatif", "Negatif"] #True Negative
+TN2 <- influenza["Tidak Vaksinasi", "Tidak Terinfeksi"] #True Negative
 TN2
 ```
 
@@ -359,29 +359,29 @@ Suatu alat tes kehamilan digunakan pada 250 wanita untuk mendeteksi kehamilan. H
 | Total               | 40             | 210                  | 250          |
 +---------------------+----------------+----------------------+--------------+
 
-Tentukan akurasi, sensitivitas, spesifisitas, dan presisi dari vaksin ini dalam mencegah infeksi influenza
+Tentukan akurasi, sensitivitas, spesifisitas, dan presisi dari alat tes kehamilan untuk mendeteksi kehamilan.
 
 **Jawab:**
 
 ```{r}
 # Input 
 hamil <- matrix(c(30, 15, 10, 195), nrow = 2, byrow = TRUE,                   
-                dimnames = list("Prediksi" = c("Positif", "Negatif"),                                                 "Aktual" = c("Positif", "Negatif"))) 
+                dimnames = list("Prediksi" = c("Positif Hamil", "Negatif Hamil"),                                     "Aktual" = c("Hamil", "Tidak Hamil"))) 
 print(hamil)
 ```
 
 ```{r}
 # Menghitung metrik-metrik performa 
-TP3 <- hamil["Positif", "Positif"] #True Positive 
+TP3 <- hamil["Positif Hamil", "Hamil"] #True Positive 
 TP3
 
-FP3 <- hamil["Positif", "Negatif"] #False Positive 
+FP3 <- hamil["Positif Hamil", "Tidak Hamil"] #False Positive 
 FP3
 
-FN3 <- hamil["Negatif", "Positif"] #False Negative 
+FN3 <- hamil["Negatif Hamil", "Hamil"] #False Negative 
 FN3  
 
-TN3 <- hamil["Negatif", "Negatif"] #True Negative 
+TN3 <- hamil["Negatif Hamil", "Tidak Hamil"] #True Negative 
 TN3
 ```
 
@@ -439,29 +439,27 @@ Pada sebuah klinik, 500 pasien menjalani pemeriksaan rutin untuk mendeteksi peny
 | Total             | 60                        | 440                                 | 500         |
 +-------------------+---------------------------+-------------------------------------+-------------+
 
-Tentukan akurasi, sensitivitas, spesifisitas, dan presisi dari vaksin ini dalam mencegah infeksi influenza
-
-**Jawab:**
+Tentukan akurasi, sensitivitas, spesifisitas, dan presisi dari pemeriksaan rutin untuk mendeteksi penyakit jantung.
 
 ```{r}
 # Input 
 jantung <- matrix(c(40, 60, 20, 380), nrow = 2, byrow = TRUE,                 
-                  dimnames = list("Prediksi" = c("Positif", "Negatif"),                                                 "Aktual" = c("Positif", "Negatif"))) 
+                  dimnames = list("Prediksi" = c("Positif", "Negatif"),                                                 "Aktual" = c("Penyakit Jantung", "Tidak Ada Penyakit Jantung"))) 
 print(jantung)
 ```
 
 ```{r}
 # Menghitung metrik-metrik performa 
-TP4 <- jantung["Positif", "Positif"] #True Positive 
+TP4 <- jantung["Positif", "Penyakit Jantung"] #True Positive 
 TP4
 
-FP4 <- jantung["Positif", "Negatif"] #False Positive 
+FP4 <- jantung["Positif", "Tidak Ada Penyakit Jantung"] #False Positive 
 FP4
 
-FN4 <- jantung["Negatif", "Positif"] #False Negative 
+FN4 <- jantung["Negatif", "Penyakit Jantung"] #False Negative 
 FN4
 
-TN4 <- jantung["Negatif", "Negatif"] #True Negative 
+TN4 <- jantung["Negatif", "Tidak Ada Penyakit Jantung"] #True Negative 
 TN4
 ```
 
@@ -519,28 +517,28 @@ Sebuah studi dilakukan untuk mengukur efektivitas menggunakan masker dalam mence
 | Total                    | 100                 | 500                       | 600          |
 +--------------------------+---------------------+---------------------------+--------------+
 
-Hitunglah akurasi, sensitivitas, spesifisitas, dan presisi dari vaksin ini dalam mencegah infeksi influenza
+Hitunglah akurasi, sensitivitas, spesifisitas, dan presisi dari penggunaan masker dalam mencegah penyebaran virus.
 
 **Jawab:**
 
 ```{r}
 # Input  
-masker <- matrix(c(30, 270, 70, 230), nrow = 2, byrow = TRUE,                                    dimnames = list("Prediksi" = c("Positif", "Negatif"),                                                 "Aktual" = c("Positif", "Negatif")))  
+masker <- matrix(c(30, 270, 70, 230), nrow = 2, byrow = TRUE,                                    dimnames = list("Prediksi" = c("Positif", "Negatif"),                                                 "Aktual" = c("Terinfeksi", "Tidak Terinfeksi")))  
 print(masker)
 ```
 
 ```{r}
 # Menghitung metrik-metrik performa  
-TP5 <- masker["Positif", "Positif"] #True Positive  
+TP5 <- masker["Positif", "Terinfeksi"] #True Positive  
 TP5
 
-FP5 <- masker["Positif", "Negatif"] #False Positive  
+FP5 <- masker["Positif", "Tidak Terinfeksi"] #False Positive  
 FP5  
 
-FN5 <- masker["Negatif", "Positif"] #False Negative  
+FN5 <- masker["Negatif", "Terinfeksi"] #False Negative  
 FN5  
 
-TN5 <- masker["Negatif", "Negatif"] #True Negative  
+TN5 <- masker["Negatif", "Tidak Terinfeksi"] #True Negative  
 TN5
 ```
 

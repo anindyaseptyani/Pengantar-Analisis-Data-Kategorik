@@ -1697,10 +1697,10 @@ print(paste(&quot;Presisi:&quot;, presisi))</code></pre>
 pada 300 pasien. Hasil dari tes tersebut adalah sebagai berikut</p>
 <table style="width:97%;">
 <colgroup>
-<col width="26%" />
-<col width="24%" />
-<col width="24%" />
-<col width="21%" />
+<col width="27%" />
+<col width="25%" />
+<col width="25%" />
+<col width="19%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -1730,7 +1730,7 @@ pada 300 pasien. Hasil dari tes tersebut adalah sebagai berikut</p>
 </tbody>
 </table>
 <p>Hitunglah akurasi, sensitivitas, spesifisitas, dan presisi dari tes
-diagnostik ini</p>
+diagnostik untuk mendeteksi penyakit diabetes.</p>
 <p><strong>Jawab:</strong></p>
 <pre class="r"><code># Input
 diabetes &lt;- matrix(c(50, 30, 20, 200), nrow = 2, byrow = TRUE,
@@ -1830,24 +1830,24 @@ ini dalam mencegah infeksi influenza</p>
 <p><strong>Jawab:</strong></p>
 <pre class="r"><code># Input
 influenza &lt;- matrix(c(10, 190, 50, 150), nrow = 2, byrow = TRUE,
-                    dimnames = list(&quot;Prediksi&quot; = c(&quot;Positif&quot;, &quot;Negatif&quot;),
-                                    &quot;Aktual&quot; = c(&quot;Positif&quot;, &quot;Negatif&quot;)))
+                    dimnames = list(&quot;Prediksi&quot; = c(&quot;Vaksinasi&quot;, &quot;Tidak Vaksinasi&quot;),
+                                    &quot;Aktual&quot; = c(&quot;Terinfeksi&quot;, &quot;Tidak Terinfeksi&quot;)))
 print(influenza)</code></pre>
-<pre><code>##          Aktual
-## Prediksi  Positif Negatif
-##   Positif      10     190
-##   Negatif      50     150</code></pre>
+<pre><code>##                  Aktual
+## Prediksi          Terinfeksi Tidak Terinfeksi
+##   Vaksinasi               10              190
+##   Tidak Vaksinasi         50              150</code></pre>
 <pre class="r"><code># Menghitung metrik-metrik performa
-TP2 &lt;- influenza[&quot;Positif&quot;, &quot;Positif&quot;] #True Positive
+TP2 &lt;- influenza[&quot;Vaksinasi&quot;, &quot;Terinfeksi&quot;] #True Positive
 TP2</code></pre>
 <pre><code>## [1] 10</code></pre>
-<pre class="r"><code>FP2 &lt;- influenza[&quot;Positif&quot;, &quot;Negatif&quot;] #False Positive
+<pre class="r"><code>FP2 &lt;- influenza[&quot;Vaksinasi&quot;, &quot;Tidak Terinfeksi&quot;] #False Positive
 FP2</code></pre>
 <pre><code>## [1] 190</code></pre>
-<pre class="r"><code>FN2 &lt;- influenza[&quot;Negatif&quot;, &quot;Positif&quot;] #False Negative
+<pre class="r"><code>FN2 &lt;- influenza[&quot;Tidak Vaksinasi&quot;, &quot;Terinfeksi&quot;] #False Negative
 FN2</code></pre>
 <pre><code>## [1] 50</code></pre>
-<pre class="r"><code>TN2 &lt;- influenza[&quot;Negatif&quot;, &quot;Negatif&quot;] #True Negative
+<pre class="r"><code>TN2 &lt;- influenza[&quot;Tidak Vaksinasi&quot;, &quot;Tidak Terinfeksi&quot;] #True Negative
 TN2</code></pre>
 <pre><code>## [1] 150</code></pre>
 <pre class="r"><code># Akurasi
@@ -1921,28 +1921,28 @@ kehamilan. Hasil pengujian menunjukkan:</p>
 </tr>
 </tbody>
 </table>
-<p>Tentukan akurasi, sensitivitas, spesifisitas, dan presisi dari vaksin
-ini dalam mencegah infeksi influenza</p>
+<p>Tentukan akurasi, sensitivitas, spesifisitas, dan presisi dari alat
+tes kehamilan untuk mendeteksi kehamilan.</p>
 <p><strong>Jawab:</strong></p>
 <pre class="r"><code># Input 
 hamil &lt;- matrix(c(30, 15, 10, 195), nrow = 2, byrow = TRUE,                   
-                dimnames = list(&quot;Prediksi&quot; = c(&quot;Positif&quot;, &quot;Negatif&quot;),                                                 &quot;Aktual&quot; = c(&quot;Positif&quot;, &quot;Negatif&quot;))) 
+                dimnames = list(&quot;Prediksi&quot; = c(&quot;Positif Hamil&quot;, &quot;Negatif Hamil&quot;),                                     &quot;Aktual&quot; = c(&quot;Hamil&quot;, &quot;Tidak Hamil&quot;))) 
 print(hamil)</code></pre>
-<pre><code>##          Aktual
-## Prediksi  Positif Negatif
-##   Positif      30      15
-##   Negatif      10     195</code></pre>
+<pre><code>##                Aktual
+## Prediksi        Hamil Tidak Hamil
+##   Positif Hamil    30          15
+##   Negatif Hamil    10         195</code></pre>
 <pre class="r"><code># Menghitung metrik-metrik performa 
-TP3 &lt;- hamil[&quot;Positif&quot;, &quot;Positif&quot;] #True Positive 
+TP3 &lt;- hamil[&quot;Positif Hamil&quot;, &quot;Hamil&quot;] #True Positive 
 TP3</code></pre>
 <pre><code>## [1] 30</code></pre>
-<pre class="r"><code>FP3 &lt;- hamil[&quot;Positif&quot;, &quot;Negatif&quot;] #False Positive 
+<pre class="r"><code>FP3 &lt;- hamil[&quot;Positif Hamil&quot;, &quot;Tidak Hamil&quot;] #False Positive 
 FP3</code></pre>
 <pre><code>## [1] 15</code></pre>
-<pre class="r"><code>FN3 &lt;- hamil[&quot;Negatif&quot;, &quot;Positif&quot;] #False Negative 
+<pre class="r"><code>FN3 &lt;- hamil[&quot;Negatif Hamil&quot;, &quot;Hamil&quot;] #False Negative 
 FN3  </code></pre>
 <pre><code>## [1] 10</code></pre>
-<pre class="r"><code>TN3 &lt;- hamil[&quot;Negatif&quot;, &quot;Negatif&quot;] #True Negative 
+<pre class="r"><code>TN3 &lt;- hamil[&quot;Negatif Hamil&quot;, &quot;Tidak Hamil&quot;] #True Negative 
 TN3</code></pre>
 <pre><code>## [1] 195</code></pre>
 <pre class="r"><code># Akurasi 
@@ -2014,28 +2014,27 @@ berikut:</p>
 </tr>
 </tbody>
 </table>
-<p>Tentukan akurasi, sensitivitas, spesifisitas, dan presisi dari vaksin
-ini dalam mencegah infeksi influenza</p>
-<p><strong>Jawab:</strong></p>
+<p>Tentukan akurasi, sensitivitas, spesifisitas, dan presisi dari
+pemeriksaan rutin untuk mendeteksi penyakit jantung.</p>
 <pre class="r"><code># Input 
 jantung &lt;- matrix(c(40, 60, 20, 380), nrow = 2, byrow = TRUE,                 
-                  dimnames = list(&quot;Prediksi&quot; = c(&quot;Positif&quot;, &quot;Negatif&quot;),                                                 &quot;Aktual&quot; = c(&quot;Positif&quot;, &quot;Negatif&quot;))) 
+                  dimnames = list(&quot;Prediksi&quot; = c(&quot;Positif&quot;, &quot;Negatif&quot;),                                                 &quot;Aktual&quot; = c(&quot;Penyakit Jantung&quot;, &quot;Tidak Ada Penyakit Jantung&quot;))) 
 print(jantung)</code></pre>
 <pre><code>##          Aktual
-## Prediksi  Positif Negatif
-##   Positif      40      60
-##   Negatif      20     380</code></pre>
+## Prediksi  Penyakit Jantung Tidak Ada Penyakit Jantung
+##   Positif               40                         60
+##   Negatif               20                        380</code></pre>
 <pre class="r"><code># Menghitung metrik-metrik performa 
-TP4 &lt;- jantung[&quot;Positif&quot;, &quot;Positif&quot;] #True Positive 
+TP4 &lt;- jantung[&quot;Positif&quot;, &quot;Penyakit Jantung&quot;] #True Positive 
 TP4</code></pre>
 <pre><code>## [1] 40</code></pre>
-<pre class="r"><code>FP4 &lt;- jantung[&quot;Positif&quot;, &quot;Negatif&quot;] #False Positive 
+<pre class="r"><code>FP4 &lt;- jantung[&quot;Positif&quot;, &quot;Tidak Ada Penyakit Jantung&quot;] #False Positive 
 FP4</code></pre>
 <pre><code>## [1] 60</code></pre>
-<pre class="r"><code>FN4 &lt;- jantung[&quot;Negatif&quot;, &quot;Positif&quot;] #False Negative 
+<pre class="r"><code>FN4 &lt;- jantung[&quot;Negatif&quot;, &quot;Penyakit Jantung&quot;] #False Negative 
 FN4</code></pre>
 <pre><code>## [1] 20</code></pre>
-<pre class="r"><code>TN4 &lt;- jantung[&quot;Negatif&quot;, &quot;Negatif&quot;] #True Negative 
+<pre class="r"><code>TN4 &lt;- jantung[&quot;Negatif&quot;, &quot;Tidak Ada Penyakit Jantung&quot;] #True Negative 
 TN4</code></pre>
 <pre><code>## [1] 380</code></pre>
 <pre class="r"><code># Akurasi 
@@ -2109,26 +2108,26 @@ berikut. Hasil adalah sebagai berikut:</p>
 </tbody>
 </table>
 <p>Hitunglah akurasi, sensitivitas, spesifisitas, dan presisi dari
-vaksin ini dalam mencegah infeksi influenza</p>
+penggunaan masker dalam mencegah penyebaran virus.</p>
 <p><strong>Jawab:</strong></p>
 <pre class="r"><code># Input  
-masker &lt;- matrix(c(30, 270, 70, 230), nrow = 2, byrow = TRUE,                                    dimnames = list(&quot;Prediksi&quot; = c(&quot;Positif&quot;, &quot;Negatif&quot;),                                                 &quot;Aktual&quot; = c(&quot;Positif&quot;, &quot;Negatif&quot;)))  
+masker &lt;- matrix(c(30, 270, 70, 230), nrow = 2, byrow = TRUE,                                    dimnames = list(&quot;Prediksi&quot; = c(&quot;Positif&quot;, &quot;Negatif&quot;),                                                 &quot;Aktual&quot; = c(&quot;Terinfeksi&quot;, &quot;Tidak Terinfeksi&quot;)))  
 print(masker)</code></pre>
 <pre><code>##          Aktual
-## Prediksi  Positif Negatif
-##   Positif      30     270
-##   Negatif      70     230</code></pre>
+## Prediksi  Terinfeksi Tidak Terinfeksi
+##   Positif         30              270
+##   Negatif         70              230</code></pre>
 <pre class="r"><code># Menghitung metrik-metrik performa  
-TP5 &lt;- masker[&quot;Positif&quot;, &quot;Positif&quot;] #True Positive  
+TP5 &lt;- masker[&quot;Positif&quot;, &quot;Terinfeksi&quot;] #True Positive  
 TP5</code></pre>
 <pre><code>## [1] 30</code></pre>
-<pre class="r"><code>FP5 &lt;- masker[&quot;Positif&quot;, &quot;Negatif&quot;] #False Positive  
+<pre class="r"><code>FP5 &lt;- masker[&quot;Positif&quot;, &quot;Tidak Terinfeksi&quot;] #False Positive  
 FP5  </code></pre>
 <pre><code>## [1] 270</code></pre>
-<pre class="r"><code>FN5 &lt;- masker[&quot;Negatif&quot;, &quot;Positif&quot;] #False Negative  
+<pre class="r"><code>FN5 &lt;- masker[&quot;Negatif&quot;, &quot;Terinfeksi&quot;] #False Negative  
 FN5  </code></pre>
 <pre><code>## [1] 70</code></pre>
-<pre class="r"><code>TN5 &lt;- masker[&quot;Negatif&quot;, &quot;Negatif&quot;] #True Negative  
+<pre class="r"><code>TN5 &lt;- masker[&quot;Negatif&quot;, &quot;Tidak Terinfeksi&quot;] #True Negative  
 TN5</code></pre>
 <pre><code>## [1] 230</code></pre>
 <pre class="r"><code># Akurasi  
