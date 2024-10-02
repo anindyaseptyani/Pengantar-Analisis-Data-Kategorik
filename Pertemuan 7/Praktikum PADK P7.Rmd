@@ -1,0 +1,465 @@
+---
+title: "Praktikum PADK P7"
+author: "Anindya Septyani G1401221074"
+date: "2024-09-23"
+output: 
+  html_document:
+    theme: simplex
+    toc: yes
+    toc_float:
+      collapsed: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Uji Z untuk Kebebasan
+
+## Membuat Tabel Kontingensi
+
+Tabel kontingensi adalah alat dasar dalam statistik untuk menampilkan frekuensi dari kombinasi dua variabel kategorikal. Dalam konteks soal yang diberikan, variabelnya adalah status vaksinasi (Vaksin, Tidak Vaksin) dan status COVID-19 (Positif, Negatif). Tabel ini disusun sebagai berikut:
+
+|                | Positif | Negatif | Total |
+|----------------|---------|---------|-------|
+| Vaksin         | 20      | 220     | 240   |
+| Tidak Divaksin | 80      | 140     | 220   |
+| Total          | 100     | 360     | 460   |
+
+## Menghitung Peluang Terkena COVID-19
+
+Untuk menghitung peluang (probabilitas) terkena COVID-19, kita fokus pada dua kelompok, yaitu kelompok yang divaksin dan tidak divaksin. Probabilitas terkena COVID-19 pada setiap kelompok dihitung sebagai:
+
+$$
+P(\text{Positif}|\text{Vaksin})=\frac{\text{Jumlah Positif pada Vaksin}}{\text{Total Vaksin}}=\frac{20}{240}=0.0833
+$$
+
+$$
+P(\text{Positif}|\text{Tidak Divaksin})=\frac{\text{Jumlah Positif pada Tidak Divaksin}}{\text{Total Tidak Divaksin}}=\frac{80}{220}=0.3636
+$$
+
+## Menghitung Risiko Relatif (Relative Risk, RR)
+
+Risiko relatif emngukur seberapa besar kemungkinan suatu kejadian terjadi pada kelompok yang terpapar (misalnya, divaksin) dibandingkan dengan kelompok yang tidak terpapar. Rumus untuk risiko relatif adalah:
+
+$$
+RR=\frac{P(\text{Positif|Vaksin)}}{P(\text{Positif|Tidak Divaksin}}
+$$
+
+Substitusi nilai yang telah dihitung:
+
+$$
+RR=\frac{0.0833}{0.3636}=0.229
+$$
+
+Ini berarti bahwa risiko terkena COVID-19 pada orang yang sudah divaksin adalah 0.229 kali risiko pada orang yang tidak divaksin. Dengan kata lain, vaksinasi menurunkan risiko terkena COVID-19.
+
+## Uji Hipotesis Z untuk Kebebasan
+
+Untuk menentukan apakah terdapat hubungan antara vaksinasi dan status COVID-19, kita menggunakan uji Z. Langkah-langkahnya adalah sebagai berikut:
+
+-   **Hipotesis Nol (H0):** Tidak ada perbedaan dalam proporsi (kedua variabel saling bebas):
+
+$$
+H_0:\pi_1-\pi_2=0
+$$
+
+-   **Hipotesis Alternatif (H1):** Ada perbedaan dalam proporsi (kedua variabel tidak saling bebas):
+
+$$
+H_1:\pi_1-\pi_2\neq0
+$$
+
+-   **Statistik Uji Z:** Statistik Z dihitung dengan rumus:
+
+$$
+z = \frac{\hat{p}_1 - \hat{p}_2}{\sqrt{\hat{p}(1-\hat{p})\left(\frac{1}{n_1} + \frac{1}{n_2}\right)}}
+$$
+
+Dimana:
+
+$$\hat{p_1}=\frac{20}{240}, \hat{p_2}=\frac{80}{220}$$ $$\hat{p}=\frac{\hat{p_1}n_1+\hat{p_2}n_2}{n_1+n_2}$$
+
+$$z_{hit} = \frac{0.0833 - 0.3636}{\sqrt{0.2293 \times 0.7707 \left( \frac{1}{240} + \frac{1}{220} \right)}}$$
+
+-   **Keputusan:** Bandingkan nilai Z yang dihitung dengan nilai kritis $Z_{\alpha/2}$ untuk taraf nyata 5% (biasanya $z_{0.025}\approx1.96$
+
+Jika $|z_{hit}|\geq z_{\alpha/2}$, maka kita tolak $H_0$. Dalam hal ini:
+
+$$
+|-7.573|\geq1.96
+$$
+
+Dengan demikian, kita tolak $H_0$, dan menyimpulkan bahwa ada cukup bukti untuk mengatakan bahwa vaksin ini mempengaruhi status COVID-19 pada taraf nyata 5%.
+
+### **Syntax R**
+
+```{r}
+# Data
+positif_vaksin <- 20
+negatif_vaksin <- 220
+positif_tidak_vaksin <- 80
+negatif_tidak_vaksin <- 140
+
+# Peluang terkena COVID-19
+p1 <- positif_vaksin / (positif_vaksin + negatif_vaksin)
+p1
+
+p2 <- positif_tidak_vaksin / (positif_tidak_vaksin + negatif_tidak_vaksin)
+p2
+
+# Relatif Relatif
+r <- p1/p2
+cat("Risiko Relatif: ", r, "\n")
+```
+
+```{r}
+# Uji Z
+n1 <- positif_vaksin + negatif_vaksin
+n1
+
+n2 <- positif_tidak_vaksin + negatif_tidak_vaksin
+n2
+
+p_combined <- (positif_vaksin + positif_tidak_vaksin) / (n1 + n2)
+p_combined
+
+z <- (p1 - p2) / sqrt(p_combined * (1 - p_combined) * (1/n1 + 1/n2))
+z
+
+z_alpha_2 <- qnorm(0.975)
+z_alpha_2
+
+# Keputusan
+cat("Statistik Z: ", z, "\n")
+```
+
+```{r}
+if(abs(z) >= z_alpha_2){
+  cat("Tolak H0: Ada cukup bukti bahwa vaksinasi berpengaruh terhadap status COVID-19.\n")
+} else {
+  cat("Gagal tolak H0: Tidak ada cukup bukti bahwa vaksinasi berpengaruh terhadap status COVID-19")
+}
+```
+
+## Kesimpulan
+
+Melalui perhitungan ini, kita mendapatkan bahwa:
+
+1.  Risiko relatif orang yang divaksinasi untuk terkena COVID-19 adalah lebih rendah dibandingkan dengan mereka yang tidak divaksinasi.
+2.  Uji Z menunjukkan bahwa ada hubungan yang signifikan antara vaksinasi dan status COVID-10 yang berarti bahwa vaksinasi memiliki pengaruh terhadap kemungkinan seseorang terkena COVID-19.
+
+## Latihan Soal
+
+### Soal 1: Pengaruh Konsumsi Gula terhadap RIsiko Diabetes
+
+Dalam sebuah penelitian, sebanyak 500 orang diperiksa untuk mengetahui hubungan antara konsumsi gula tinggi dengan risiko diabetes. Dari 300 orang yang didiagnosis dengan diabetes, 180 diantaranya memiliki konsumsi gula tinggi. Dari 200 orang yang tidak menderita diabetes, 50 diantaranya memiliki konsumsi gula tinggi.
+
+**Tabel Kontingensi**
+
+```{r}
+# Input
+diabetes <- matrix(c(180, 120, 50, 150), nrow = 2, byrow = TRUE,
+                     dimnames = list("Prediksi" = c("Diabetes", "Tidak Diabetes"),
+                                     "Aktual" = c("Gula Tinggi", "Gula Tidak Tinggi")))
+print(diabetes)
+```
+
+**Peluang dan Risiko Relatif**
+
+```{r}
+# Data
+TP1 <- 180 #Diabetes, Gula Tinggi
+FN1 <- 50 # Tidak Diabetes, Gulang Tinggi
+FP1 <- 120 # Diabetes, Gula Tidak Tinggi
+TN1 <- 150 # Tidak Diabetes, Gula Tidak Tinggi
+
+# Peluang terkena diabetes
+p1_1 <- TP1  / (TP1 + FN1)
+cat("Peluang terkena diabetes jika mengonsumsi gula tinggi: ", p1_1, "\n")
+
+p1_2 <- FP1 / (FP1 + TN1)
+cat("Peluang terkena diabetes jika tidak mengonsumsi gula tinggi: ", p1_2, "\n")
+
+# Relatif Relatif
+r1 <- p1_1/p1_2
+cat("Risiko Relatif konsumsi gula tinggi terhadap risiko diabetes: ", r1, "\n")
+```
+
+**Uji z**
+
+```{r}
+# Uji Z
+n1_1 <- TP1 + FN1
+n1_1
+
+n1_2 <- FP1 + TN1
+n1_2
+
+p1_combined <- (TP1 + FP1) / (n1_1 + n1_2)
+p1_combined
+
+z1 <- (p1_1 - p1_2) / sqrt(p1_combined * (1 - p1_combined) * (1/n1_1 + 1/n1_2))
+cat("Nilai z hitung: ", z1, "\n")
+
+ztab1 <- qnorm(0.975)
+cat("Nilai z tabel: ", ztab1, "\n")
+```
+
+```{r}
+if(abs(z1) >= ztab1){
+  cat("Tolak H0: Ada cukup bukti bahwa mengonsumsi gula tinggi berpengaruh terhadap diabetes.\n")
+} else {
+  cat("Gagal tolak H0: Tidak ada cukup buktibahwa mengonsumsi gula tinggi berpengaruh terhadap diabetes.")
+}
+```
+
+### Soal 2: Hubungan Antara Merokok dan Kanker Paru-paru
+
+Sebuah studi dilakukan untuk mengevaluasi hubungan antara merokok dan kanker paru-paru. Dari 400 orang yang terdiagnosis kanker paru-paru. 250 diantaranya adalah perokok. Dari 600 orang yang tidak terdiagnosis kanker paru-paru, 200 diantaranya adalah perokok.
+
+**Tabel Kontingensi**
+
+```{r}
+# Input 
+perokok <- matrix(c(250, 150, 200, 400), nrow = 2, byrow = TRUE, 
+                  dimnames = list("Prediksi" = c("Kanker Paru-paru", "Tidak Kanker Paru-paru"), 
+                                  "Aktual" = c("Perokok", "Tidak Perokok"))) 
+print(perokok)
+```
+
+**Peluang dan Risiko Relatif**
+
+```{r}
+# Data 
+TP2 <- 250 # Kanker Paru-paru, Perokok 
+FN2 <- 200 # Tidak Kanker Paru-paru, Perokok
+FP2 <- 150 # Kanker Paru-paru, Tidak Perokok 
+TN2 <- 400 # Tidak Kanker Paru-paru, Tidak Perokok 
+
+# Peluang terkena Kanker paru-paru
+p2_1 <- TP2  / (TP2 + FN2) 
+cat("Peluang terkena kanker paru-paru pada perokok: ", p1_1, "\n")  
+p2_2 <- FP2 / (FP2 + TN2) 
+cat("Peluang terkena kanker paru-paru pada non perokok: ", p1_2, "\n")  
+
+# Relatif Relatif 
+r2 <- p2_1/p2_2 
+cat("Risiko Relatif merokok terhadap kanker paru-paru: ", r2, "\n")
+```
+
+**Uji z**
+
+```{r}
+# Uji Z 
+n2_1 <- TP2 + FN2 
+n2_1  
+
+n2_2 <- FP2 + TN2 
+n2_2  
+
+p2_combined <- (TP2 + FP2) / (n2_1 + n2_2) 
+p2_combined  
+
+z2 <- (p2_1 - p2_2) / sqrt(p2_combined * (1 - p2_combined) * (1/n2_1 + 1/n2_2)) 
+cat("Nilai z hitung: ", z2, "\n")  
+
+ztab2 <- qnorm(0.975) 
+cat("Nilai z tabel: ", ztab2, "\n")
+```
+
+```{r}
+if(abs(z1) >= ztab1){   
+  cat("Tolak H0: Ada cukup bukti bahwa terdapat hubungan antara merokok dan kanker paru-paru.\n") 
+  } else {   
+  cat("Gagal tolak H0: Tidak ada cukup bukti bahwa terdapat hubungan antara merokok dan kanker paru-paru.") 
+  }
+```
+
+### Soal 3: Pengaruh Latihan Fisik terhadap Obesitas
+
+Sebuah survei dilakukan terhadap 700 orang untuk menilai hubungan antara latiihan fisik rutin dengan obesitas. Dari 300 orang yang tidak mengalami obesitas, 240 orang rutin berolahraga. Dari 400 orang yang mengalami obesitas, 150 orang rutin berolahraga.
+
+**Tabel Kontingensi**
+
+```{r}
+# Input  
+obesitas <- matrix(c(150, 250, 240, 60), nrow = 2, byrow = TRUE, 
+                   dimnames = list("Prediksi" = c("Obesitas", "Tidak Obesitas"),
+                                   "Aktual" = c("Rutin Berolahraga", "Tidak Rutin Berolahraga")))  
+print(obesitas)
+```
+
+**Peluang dan Risiko Relatif**
+
+```{r}
+# Data  
+TP3 <- 150 # Obesitas, Rutin Berolahraga 
+FP3 <- 250 # Obesitas, Tidak Rutin Berolahraga
+FN3 <- 240 # Tidak Obesitas, Rutin Berolahraga
+TN3 <- 60 # Tidak Obesitas, Tidak Rutin Berolahraga   
+
+# Peluang terkena obesitas
+p3_1 <- FN3  / (TP3 + FN3)  
+cat("Peluang tidak terkena obesitas jika rutin berolahraga: ", p3_1, "\n")   
+p3_2 <- FP3 / (FP3 + TN3)  
+cat("Peluang terkena obesitas jika tidak rutin berolahraga: ", p3_2, "\n")    
+
+# Relatif Relatif  
+r3 <- p3_1/p3_2  
+cat("Risiko Relatif latihan fisik terhadap obesitas: ", r3, "\n")
+```
+
+Peluang risiko terkena obesitas ketika rutin berolahraga 0.76 dari orang yang tidak rutin berolahraga untuk terkena obesitas.
+
+**Uji z**
+
+```{r}
+# Uji Z 
+n3_1 <- TP3 + FN3 
+n3_1  
+
+n3_2 <- FP3 + TN3 
+n3_2  
+
+p3_combined <- (FN3 + FP3) / (n3_1 + n3_2) 
+p3_combined  
+
+z3 <- (p3_1 - p3_2) / sqrt(p3_combined * (1 - p3_combined) * (1/n3_1 + 1/n3_2)) 
+cat("Nilai z hitung: ", z3, "\n")  
+
+ztab3 <- qnorm(0.975) 
+cat("Nilai z tabel: ", ztab3, "\n")
+```
+
+```{r}
+if(z3 >= ztab3){   
+  cat("Tolak H0: Ada cukup bukti bahwa terdapat pengaruh dari latihan fisik terhadap obesitas.\n") 
+  } else {   
+  cat("Gagal tolak H0: Tidak ada cukup bukti bahwa terdapat pengaruh dari latihan fisik terhadap obesitas.") 
+  }
+```
+
+### Soal 4: Pengaruh Konsumsi Sayur terhadap Risiko Penyakit Jantung
+
+Dalam sebuah penelitian, 500 orang dieriksa untuk mengamati hubungan antara konsumsi sayur harian dengan risiko penyakit jantung. Dari 200 orang yang terdiagnosis penyakit jantung, 60 diantaranya memiliki kebiasaan konsumsi sayur harian. Dari 300 orang yang tidak terdiagnosis penyakit jantung, 220 diantaranya rutin mengonsumi sayur setiap hari.
+
+**Tabel Kontingensi**
+
+```{r}
+# Input  
+jantung <- matrix(c(60, 140, 220, 80), nrow = 2, byrow = TRUE, 
+                   dimnames = list("Prediksi" = c("Sakit Jantung", "Tidak Sakit Jantung"),
+                                   "Aktual" = c("Rutin Konsumsi Sayur", "Tidak Rutin Konsumsi Sayur")))  
+print(jantung)
+```
+
+**Peluang dan Risiko Relatif**
+
+```{r}
+# Data  
+TP4 <- 60 # Sakit Jantung, Rutin Konsumsi Sayur
+FP4 <- 140 # Sakit Jantung, Tidak Rutin Konsumsi Sayur
+FN4 <- 220 # Tidak Sakit Jantung, Rutin Konsumsi Sayur
+TN4 <- 80 # Tidak Sakit Jantung, Tidak Rutin Konsumsi Sayur
+
+# Peluang terkena penyakit jantung
+p4_1 <- TP4  / (TP4 + FN4)  
+cat("Peluang terkena penyakit jantung jika rutin konsumsi sayur: ", p4_1, "\n")   
+p4_2 <- FP4 / (FP4 + TN4)  
+cat("Peluang terkena penyakit jantung jika tidak rutin konsumsi sayur: ", p4_2, "\n")    
+
+# Relatif Relatif  
+r4 <- p4_1/p4_2  
+cat("Risiko Relatif konsumsi sayur terhadap penyakit jantung: ", r4, "\n")
+```
+
+**Uji z**
+
+```{r}
+# Uji Z 
+n4_1 <- TP4 + FN4 
+n4_1  
+
+n4_2 <- FP4 + TN4 
+n4_2  
+
+p4_combined <- (TP4 + FP4) / (n4_1 + n4_2) 
+p4_combined  
+
+z4 <- (p4_1 - p4_2) / sqrt(p4_combined * (1 - p4_combined) * (1/n4_1 + 1/n4_2)) 
+cat("Nilai z hitung: ", z4, "\n")  
+
+ztab4 <- qnorm(0.975) 
+cat("Nilai z tabel: ", ztab4, "\n")
+```
+
+```{r}
+if(z4 >= ztab4){   
+  cat("Tolak H0: Ada cukup bukti bahwa terdapat pengaruh mengonsumsi sayur terhadap risiko penyakit jantung.\n") 
+  } else {   
+  cat("Gagal tolak H0: Tidak ada cukup bukti bahwa terdapat pengaruh mengonsumsi sayur terhadap risiko penyakit jantung.") 
+  }
+```
+
+### Soal 5: Pengaruh Konsumsi Kopi terhadap Insomnisa
+
+Sebuah penelitian dilakukan untuk mengetahui hubungan antara konsumsi kopi dengan insomnisa. Dari 350 orang yang mengamali insomnia, 250 diantaranya rutin minum kopi. Dari 150 orang yang tidak mengalami insomnia, 50 diantaranya rutin minum kopi.
+
+**Tabel Kontingensi**
+
+```{r}
+# Input  
+insomnia <- matrix(c(250, 100, 50, 100), nrow = 2, byrow = TRUE, 
+                   dimnames = list("Prediksi" = c("Insomnia", "Tidak Insomnia"),
+                                   "Aktual" = c("Rutin Minum Kopi", "Tidak Rutin Minum Kopi")))  
+print(insomnia)
+```
+
+**Peluang dan Risiko Relatif**
+
+```{r}
+# Data  
+TP5 <- 250 # Insomnia, Rutin Minum Kopi
+FP5 <- 100 # Insomnia, Tidak Rutin Minum Kopi
+FN5 <- 50 # Tidak Insomnia, Rutin Minum Kopi
+TN5 <- 100 # Tidak Insomnia, Tidak Rutin Minum Kopi
+
+# Peluang terkena insomnia
+p5_1 <- TP5  / (TP5 + FN5)  
+cat("Peluang terkena insomnia jika rutin minum kopi: ", p5_1, "\n")   
+p5_2 <- TN5 / (FP5 + TN5)  
+cat("Peluang tidak terkena insomnia jika tidak rutin minum kopi: ", p5_2, "\n")    
+
+# Relatif Relatif  
+r5 <- p5_1/p5_2  
+cat("Risiko Relatif konsumsi kopi terhadap insomnia: ", r5, "\n")
+```
+
+**Uji z**
+
+```{r}
+# Uji Z 
+n5_1 <- TP5 + FN5 
+n5_1  
+
+n5_2 <- FP5 + TN5 
+n5_2  
+
+p5_combined <- (TP5 + TN5) / (n5_1 + n5_2) 
+p5_combined  
+
+z5 <- (p5_1 - p5_2) / sqrt(p5_combined * (1 - p5_combined) * (1/n5_1 + 1/n5_2)) 
+cat("Nilai z hitung: ", z5, "\n")  
+
+ztab5 <- qnorm(0.975) 
+cat("Nilai z tabel: ", ztab5, "\n")
+```
+
+```{r}
+if(abs(z5) >= ztab5){   
+  cat("Tolak H0: Ada cukup bukti bahwa terdapat pengaruh konsumsi kopi terhadap insomnia.\n") 
+  } else {   
+  cat("Gagal tolak H0: Tidak ada cukup bukti bahwa terdapat pengaruh konsumsi kopi terhadap insomnia.") 
+  }
+```
