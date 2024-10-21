@@ -1,0 +1,354 @@
+---
+title: "Praktikum PADK P8"
+author: "Anindya Septyani G1401221074"
+date: "2024-10-18"
+output: 
+  html_document:
+    theme: cerulean
+    toc: yes
+    toc_float:
+      collapsed: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Odds Ratio dan Uji Kebebasan Chi-Square
+
+## Odds Ratio
+
+Odds Ratio (OD) digunakan untuk mengukur kekuatan asosiasi antara dua kejadian dalam tabel kontingensi 2x2. Ini sering digunakan dalam studi kasus-kontrol, dimana kita ingin mengetahui seberapa besar peluang suatu kejadian terjadi di satu kelompok dibandingkan dengan kelompok lain.
+
+### Definisi Odds Ratio
+
+|                | Outcome 1 (+) | Outcome 2 (-) | Total |
+|:--------------:|:-------------:|:-------------:|:-----:|
+| **Exposure 1** |       a       |       b       |  a+b  |
+| **Exposure 2** |       c       |       d       |  c+d  |
+|   **Total**    |      a+c      |      b+d      |   n   |
+
+Odds Ratio (OR) dihitung dengan rumus:
+
+$$
+\text{OR}=\frac{\frac{a}{c}}{\frac{b}{d}}=\frac{a.d}{b.c}
+$$
+
+### Contoh Kasus
+
+-   Ada 640 subyek, dimana 325 mendapat produk baru dan 315 mendapat produk standar
+-   Dari 436 subyek yang terkena malnutrisi, 238 berasal dari kelompok produk baru dan 198 dari kelompok produk standar.
+
+Maka tabel kontingensinya adalah:
+
+|                    | Malnutrisi (+) | Malnutrisi (-) | Total |
+|:------------------:|:--------------:|:--------------:|:-----:|
+|  **Produk Baru**   |      238       |       87       |  325  |
+| **Produk Standar** |      198       |      117       |  315  |
+
+### Perhitungan Odds Ratio di R
+
+```{r}
+# Data
+produk_baru <- c(238,87) 
+produk_standar <- c(198,117)
+
+# Tabel Kontingensi
+tabel_kontingensi <- matrix(c(produk_baru, produk_standar), nrow = 2, byrow = TRUE)
+
+# Menghitung Odds Ratio
+or <- (tabel_kontingensi[1,1]/tabel_kontingensi[1,2])/(tabel_kontingensi[2,1]/tabel_kontingensi[2,2])
+or
+```
+
+### Interpretasi
+
+Jika $\text{OR}>1$, ini berarti ada asosiasi positif antara *exposure* (dalam hal ini produk baru) dan *outcome* (malnutrisi). Misalnya, jika $\text{OR}=1.62$, ini berarti risiko terkena malnutrisi pada kelompok yang mendapatkan produk baru adalah **1.62 kali lebih besar** dibandingkan dengan kelompok yang mendapatkan produk standar.
+
+## Uji Kebebasan Chi-Square
+
+### Definisi Uji Kebebasan Chi–Square
+
+Uji kebebasan Chi-Square *(Chi-Square Test of Independence)* digunakan untuk menentukan apakah ada hubungan yang signifikan antara dua variabel kategorik.
+
+### Hipotesis 
+
+-   $\text{H0}$: Tidak ada hubungan antara kedua variabel (saling bebas)
+-   $\text{H1}$: Ada hubungan antara kedua variabel (saling terikat)
+
+### Statistik Uji
+
+Statistik uji Chi-Square dihitung dengan rumus:
+
+$$
+\chi^2=\sum\frac{(O_i-E_i)^2}{E_i}
+$$
+
+dimana: $O_i$ adalah frekuensi observasi, $E_i$ adalah frekuensi harapan, yang dihitung sebagai:
+
+$$
+E_i=\frac{\text{Total Baris x Total Kolom}}{\text{Total}}
+$$
+
+### Contoh 1
+
+Data Hubungan antara merokok dan kanker paru-paru diberikan sebagai berikut:
+
+|                          | Kanker Paru (+) | Kanker Paru (-) | Total |
+|:------------------------:|:---------------:|:---------------:|:-----:|
+|    **Pernah Merokok**    |       688       |       650       | 1338  |
+| **Tidak Pernah Merokok** |       21        |       59        |  80   |
+|        **Total**         |       709       |       709       | 1418  |
+
+```{r}
+# Data
+kanker_paru <- matrix(c(688,650,21,59), nrow = 2, byrow = TRUE)
+
+# Menghitung Uji Chi-Square
+uji_chisq <- chisq.test(kanker_paru)
+uji_chisq
+
+# Frekuensi Harapan
+uji_chisq$expected
+```
+
+Karena nilai $\text{P-Value}<0.05$, maka tolak $H_0$ yang artinya bahwa ada hubungan yang signifikan antara merokok dan kanker paru-paru.
+
+### Contoh 2
+
+DIberikan tabel kontingensi hubungan antara aspirasi pendidikan dan pendapatan keluarga:
+
+|                                  | Pendapatan Rendah | Pendapatan Menengah | Pendapatan Tinggi  | Total |
+|:-------------:|:-------------:|:-------------:|:-------------:|------------|
+|       **Sekolah Menengah**       |         9         |         11          |         9          | 29    |
+|   **Lulusan Sekolah Menengah**   |        44         |         52          |         41         | 137   |
+|       **Perguruan Tinggi**       |        13         |         23          |         12         | 48    |
+| **Lulusan** **Perguruan Tinggi** |        10         |         22          |         27         | 59    |
+
+```{r}
+# Data
+aspirasi <- matrix(c(9,11,9,44,52,41,13,23,12,10,22,27), nrow = 4, byrow = TRUE)
+
+# Menghitung Uji Chi-Squate
+uji_chisq_aspirasi <- chisq.test(aspirasi)
+
+# Hasil
+uji_chisq_aspirasi
+
+# Frekuensi Harapan
+uji_chisq_aspirasi$expected
+```
+
+Karena nilai $\text{P-Value}>0.05$, maka tidak tolak $H_0$ yang artinya bahwa tidak ada hubungan yang signifikan antara aspirasi pendidikan dan pendapatan keluarga.
+
+## Latihan Soal 
+
+### Soal 1: Kepuasan Pelanggan dan Jenis Produk
+
+Sebuah perusahaan ingin mengetahui apakah ada hubungan antara jenis produk yang dibeli pelanggan dan tingkat kepuasan pelanggan. Data survei terhadap 200 pelangaan diberikan sebagai berikut:
+
+|              | Puas | Tidak Puas | Total |
+|:------------:|:----:|:----------:|:-----:|
+| **Produk A** |  50  |     30     |  80   |
+| **Produk B** |  40  |     20     |  60   |
+| **Produk C** |  30  |     30     |  60   |
+
+Tentukan apakah ada hubungan yang signifikan antara jenis produk dan tingkat kepuasan pelanggan dengan menggunakan uji Chi-Square
+
+**Hipotesis**
+
+-   $\text{H0}$: Tidak ada hubungan antara jenis produk dan tingkat kepuasan pelanggan
+-   $\text{H1}$: Ada hubungan antara jenis produk dan tingkat kepuasan pelanggan
+
+**Statistik Uji**
+
+```{r}
+# Data
+kepuasan <- matrix(c(50,30,40,20,30,30), nrow = 3, byrow = TRUE)
+
+# Menghitung Uji Chi-Squate
+uji_chisq_kepuasan <- chisq.test(kepuasan)
+
+# Hasil
+uji_chisq_kepuasan
+
+# Frekuensi Harapan
+uji_chisq_kepuasan$expected
+```
+
+```{r}
+# Keputusan tolak atau terima H0
+if (uji_chisq_kepuasan$p.value < 0.05) {
+  print("Tolak H0: Ada hubungan yang signifikan antara jenis produk dan tingkat kepuasan pelanggan")
+} else {
+  print("Terima H0: Tidak ada hubungan yang signifikan antara jenis produk dan tingkat kepuasan pelanggan")
+}
+```
+
+### Soal 2: Jenis Diet dan Penurunan Berat Badan
+
+Sebuah studi dilakukan untuk melihat apakah ada hubungan antara jenis diet yang diikuti seseorang dari penurunan berat badan setelah 6 bulan. Data yang diperoleh dari 120 orang adalah sebagai berikut:
+
+|                      | Penurunan Berat Badan | Tidak Ada Penurunan | Total |
+|:--------------------:|:---------------------:|:-------------------:|:-----:|
+|    **Diet Keto**     |          25           |         15          |  40   |
+|    **Diet Vegan**    |          20           |         20          |  40   |
+| **Diet Mediterania** |          30           |         10          |  40   |
+
+Ujilah apakah ada asosiasi antara jenis diet dan penurunan berat badan menggunakan uji Chi-Square
+
+**Hipotesis**
+
+-   $\text{H0}$: Tidak ada hubungan antara jenis diet dan penurunan berat badan
+-   $\text{H1}$: Ada hubungan antara jenis diet dan penurunan berat badan
+
+**Statistik Uji**
+
+```{r}
+# Data
+diet <- matrix(c(25,15,20,20,30,10), nrow = 3, byrow = TRUE)
+
+# Menghitung Uji Chi-Squate
+uji_chisq_diet <- chisq.test(diet)
+
+# Hasil
+uji_chisq_diet
+
+# Frekuensi Harapan
+uji_chisq_diet$expected
+```
+
+```{r}
+# Keputusan tolak atau terima H0
+if (uji_chisq_diet$p.value < 0.05) {
+  print("Tolak H0: Ada hubungan yang signifikan antara jenis diet dan penurunan berat badan")
+} else {
+  print("Terima H0: Tidak ada hubungan yang signifikan antara jenis diet dan penurunan berat badan")
+}
+```
+
+### Soal 3: Jenis Kendaraan dan Kepatuhan Terhadap Aturan Lalu Lintas
+
+Polisi lalu lintas mengumpulkan data tentang kepatuhan pengemudi terhadap aturan lalu lintas berdasarkan jenis kendaraan yang mereka kendarai. Data yang dikumpulkan adalah sebagai berikut:
+
+|            | Patuh | Tidak Patuh | Total |
+|:----------:|:-----:|:-----------:|:-----:|
+| **Mobil**  |  120  |     80      |  200  |
+| **Motor**  |  90   |     110     |  200  |
+| **Sepeda** |  60   |     40      |  100  |
+
+Ujilah apakah ada hubungan yang signifikan antara jenis kendaraan dan kepatuhan terhadap aturan lalu lintas menggunakan uji Chi-Square.
+
+**Hipotesis**
+
+-   $\text{H0}$: Tidak ada hubungan antara jenis kendaraan dan kepatuhan terhadap aturan lalu lintas
+-   $\text{H1}$: Ada hubungan antara jenis kendaraan dan kepatuhan terhadap aturan lalu lintas
+
+**Statistik Uji**
+
+```{r}
+# Data
+lalulintas <- matrix(c(120,80,90,110,60,40), nrow = 3, byrow = TRUE)
+
+# Menghitung Uji Chi-Squate
+uji_chisq_lalulintas <- chisq.test(lalulintas)
+
+# Hasil
+uji_chisq_lalulintas
+
+# Frekuensi Harapan
+uji_chisq_lalulintas$expected
+```
+
+```{r}
+# Keputusan tolak atau terima H0
+if (uji_chisq_lalulintas$p.value < 0.05) {
+  print("Tolak H0: Ada hubungan yang signifikan antara jenis kendaraan dan kepatuhan terhadap aturan lalu lintas")
+} else {
+  print("Terima H0: Tidak ada hubungan yang signifikan antara jenis kendaraan dan kepatuhan terhadap aturan lalu lintas")
+}
+```
+
+### Soal 4: Kegiatan Ekstrakurikuler dan Prestasi Akademik
+
+Sebuah sekolah meneliti apakah ada hubungan antara jenis kegiatan ekstrakurikuler yang diikuti siswa dan prestasi akademik mereka. Data yang diperoleh dari 150 siswa adalah sebagai berikut:
+
+|                            | Prestasi Tinggi | Prestasi Rendah | Total |
+|:--------------------------:|:---------------:|:---------------:|:-----:|
+|        **Olahraga**        |       30        |       20        |  50   |
+|          **Seni**          |       25        |       25        |  50   |
+| **Akademik (Klub Ilmiah)** |       35        |       15        |  50   |
+
+Ujilah apakah ada hubungan yang signifikan antara jenis kegiatan ekstrakurikuler yang diikuti siswa dan prestasi akademik menggunakan uji Chi-Square.
+
+**Hipotesis**
+
+-   $\text{H0}$: Tidak ada hubungan antara jenis kegiatan ekstrakurikuler yang diikuti siswa dan prestasi akademik
+-   $\text{H1}$: Ada hubungan antara jenis kegiatan ekstrakurikuler yang diikuti siswa dan prestasi akademik
+
+**Statistik Uji**
+
+```{r}
+# Data
+prestasi <- matrix(c(30,20,25,25,35,15), nrow = 3, byrow = TRUE)
+
+# Menghitung Uji Chi-Squate
+uji_chisq_prestasi <- chisq.test(prestasi)
+
+# Hasil
+uji_chisq_prestasi
+
+# Frekuensi Harapan
+uji_chisq_prestasi$expected
+```
+
+```{r}
+# Keputusan tolak atau terima H0
+if (uji_chisq_prestasi$p.value < 0.05) {
+  print("Tolak H0: Ada hubungan yang signifikan antara jenis kegiatan ekstrakurikuler yang diikuti siswa dan prestasi akademik")
+} else {
+  print("Terima H0: Tidak ada hubungan yang signifikan antara jenis kegiatan ekstrakurikuler yang diikuti siswa dan prestasi akademik")
+}
+```
+
+### Soal 5: Jenis Media Sosial dan Frekuensi Penggunaan
+
+Sebuah penelitian ingin mengetahui apakah ada hubungan antara jenis media sosial yang digunakan seseorang dan frekuensi penggunaannya. Data yang diperoleh dari 300 responden adalah sebagai berikut:
+
+|               | Sering | Jarang | Tidak Pernah | Total |
+|:-------------:|:------:|:------:|:------------:|:-----:|
+| **Facebook**  |  100   |   50   |      50      |  200  |
+| **Instagram** |   90   |   30   |      30      |  150  |
+|  **Twitter**  |   70   |   20   |      60      |  150  |
+
+Ujilah apakah ada hubungan yang signifikan antara jenis media sosial yang digunakan seseorang dan frekuensi penggunaannya menggunakan uji Chi-Square.
+
+**Hipotesis**
+
+-   $\text{H0}$: Tidak ada hubungan antara jenis media sosial yang digunakan seseorang dan frekuensi penggunaannya.
+-   $\text{H1}$: Ada hubungan antara jenis media sosial yang digunakan seseorang dan frekuensi penggunaannya.
+
+**Statistik Uji**
+
+```{r}
+# Data
+medsos <- matrix(c(100,50,50,90,30,30,70,20,60), nrow = 3, byrow = TRUE)
+
+# Menghitung Uji Chi-Squate
+uji_chisq_medsos <- chisq.test(medsos)
+
+# Hasil
+uji_chisq_medsos
+
+# Frekuensi Harapan
+uji_chisq_medsos$expected
+```
+
+```{r}
+# Keputusan tolak atau terima H0
+if (uji_chisq_medsos$p.value < 0.05) {
+  print("Tolak H0: Ada hubungan yang signifikan antara jenis media sosial yang digunakan seseorang dan frekuensi penggunaannya")
+} else {
+  print("Terima H0: Tidak ada hubungan yang signifikan antara jenis media sosial yang digunakan seseorang dan frekuensi penggunaannya")
+}
+```
