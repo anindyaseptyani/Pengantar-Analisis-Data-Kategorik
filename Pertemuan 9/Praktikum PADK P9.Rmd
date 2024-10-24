@@ -1,0 +1,753 @@
+---
+title: "Praktikum PADK P9"
+author: "Anindya Septyani G1401221074"
+date: "2024-10-23"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Uji Eksak Fisher
+
+# Definisi
+
+Uji Eksak Fisher digunakan untuk menguji independensi antara dua variabel kategorikal dalam tabel kontingensi 2x2. Uji ini sangat tepat digunakan ketika salah satu atau lebih frekuensi harapan dalam tabel tersebut kurang dari 5, dimana Uji Chi-Square mungkin memberikan hasil yang kurang akurat.
+
+# Tabel Kontingensi
+
+Misalkan kita memiliki tabel kontigensi 2x2 sebagai berikut:
+
+|                 | **Kolom 1 (A)** | **Kolom 2 (B)** |
+|:---------------:|:---------------:|:---------------:|
+| **Baris 1 (C)** |        a        |        b        |
+| **Baris 2 (D)** |        c        |        d        |
+
+Total data dalam tabel adalah $n = a+b+c+d$
+
+# Rumus Probabilitas
+
+Rumus untuk menghitung probabilitas dalam Uji Eksak Fisher adalah:
+
+$$
+P=\frac{(a+b)!(c+d)!(a+c)!(b+d)!}{a!b!c!d!n!}
+$$
+
+Dimana:
+
+-   $a!$ adalah faktorial dari $a$, yaitu $a \times (a-1) \times ... \times 1$
+
+-   $n!$ adalah faktorial dari total data $n$
+
+# Contoh Kasus
+
+Misalkan kita memiliki tabel kontingensi sebagai berikut
+
+|                | **Meninggal (Dead)** | **Hidup (Alive)** |
+|:--------------:|:--------------------:|:-----------------:|
+|    **BBLR**    |          4           |         2         |
+| **Tidak BBLR** |          1           |         9         |
+
+Total data $n=4+2+1+9=16$
+
+## Perhitungan Manual
+
+1.  **Menghitung Faktorial**
+
+    $$
+    a!=4!\\b!=2!\\c!=1!\\d!=9!\\n!=16!
+    $$
+
+2.  **Substitusi ke Rumus**
+
+    $$
+    P=\frac{(6!)(10!)(5!)(11!)}{(4!)(2!)(1!)(9!)(16!)}
+    $$
+
+    Perhitungan ini secara manual sangat kompleks dan biasanya lebih mudah dilakukan dengan bantuan *software* seperti R.
+
+## Perhitungan R
+
+```{r}
+bayi = matrix(c(4,2,1,9), nrow = 2)
+colnames(bayi) = c("Dead", "Alive")
+rownames(bayi) = c("BBLR", "Tidak BBLR")
+fishtest_bayi <- fisher.test(bayi)
+fishtest_bayi
+```
+
+```{r}
+# Keputusan tolak atau terima H0
+if (fishtest_bayi$p.value < 0.05) {
+  print("Tolak H0: Ada hubungan yang signifikan antara status BBLR dan hasil kelahiran")
+} else {
+  print("Terima H0: Tidak ada hubungan yang signifikan antara status BBLR dan hasil kelahiran")
+}
+```
+
+**Interpretasi:**
+
+Odds Ratio sebesar $14.00425$ berarti bayi dengan BBLR memiliki kemungkinan 14 kali lebih besar untuk meninggal dibandingan dengan bayi yang tidak BBLR
+
+## Visualisasi di R
+
+```{r}
+library(ggplot2)
+
+# Data
+bayi = matrix(c(4, 2, 1, 9), nrow = 2)
+colnames(bayi) = c("Dead", "Alive")
+rownames(bayi) = c("BBLR", "Tidak BBLR")
+
+# Menghitung proporsi
+proporsi = prop.table(bayi, margin = 1)
+
+# Mengubah format data untuk ggplot2
+data_plot = as.data.frame(as.table(proporsi))
+
+# Menambahkan total proporsi per kategori BBLR dan Tidak BBLR
+data_plot$total_proporsi = prop.table(rowSums(bayi))
+
+# Membuat plot
+ggplot(data_plot, aes(x = Var1, y = Freq, fill = Var2, label = scales::percent(Freq))) + 
+  geom_bar(stat = "identity", position = "dodge", color = "black", size = 0.7) + 
+  geom_text(position = position_dodge(width = 0.9), vjust = -0.3) +  # Anotasi nilai proporsi
+  geom_line(aes(group = Var1, y = total_proporsi, color = Var1), linetype = "dashed", size = 1) + # Garis proporsi total
+  geom_point(aes(group = Var1, y = total_proporsi, color = Var1), size = 3) + # Titik pada garis total
+  scale_fill_brewer(palette = "Set1") +  # Warna lebih menarik
+  scale_color_manual(values = c("BBLR" = "darkred", "Tidak BBLR" = "darkblue")) +  # Warna garis total
+  labs(x = "Status Bayi", y = "Proporsi", fill = "Status Hidup", color = "Garis Total") + 
+  ggtitle("Proporsi Bayi Meninggal dan Hidup Berdasarkan Status BBLR") + 
+  theme_minimal() +
+  theme(legend.position = "top", 
+        plot.title = element_text(hjust = 0.5, size = 16, face = "bold"))  # Menambahkan judul
+```
+
+# Latihan Soal
+
+## Soal 1 : Pengaruh Vaksinasi Terhadap Infeksi Penyakit
+
+Tabel berikut menunjukkan data mengenai infeksi penyakit pada dua kelompok orang, yang satu divaksinasi dan yang lainnya tidak.
+
+|                       | **Terinfeksi** | **Tidak Terinfeksi** |
+|:---------------------:|:--------------:|:--------------------:|
+|    **Divaksinasi**    |       3        |          15          |
+| **Tidak Divaksinasi** |       12       |          10          |
+
+**Pertanyaan:** Apakah ada hubungan yang signifikan antara status vaksinasi dan infeksi penyakit?
+
+**Jawaban**
+
+```{r}
+infeksi <-  matrix(c(3, 15, 12, 10), nrow = 2)
+colnames(infeksi) <- c("Terinfeksi", "Tidak Terinfeksi")
+rownames(infeksi) <-c("Vaksin", "Tidak Vaksin")
+fishtest_infeksi <- fisher.test(infeksi)
+fishtest_infeksi
+```
+
+```{r}
+# Keputusan tolak atau terima H0
+if (fishtest_infeksi$p.value < 0.05) {
+  print("Tolak H0: Ada hubungan yang signifikan antara status vaksinasi dan infeksi penyakit")
+} else {
+  print("Terima H0: Tidak ada hubungan yang signifikan antara status vaksinasi dan infeksi penyakit")
+}
+```
+
+**Interpretasi:**
+
+Nilai Odds ratio sebesar $0.1747616$ menunjukkan bahwa peluang terkena infeksi pada kelompok yang divaksinasi sangat rendah yaitu sebesar nilai odds rationya tersebut.
+
+```{r}
+# Data
+infeksi <-  matrix(c(3, 15, 12, 10), nrow = 2)
+colnames(infeksi) <- c("Terinfeksi", "Tidak Terinfeksi")
+rownames(infeksi) <- c("Vaksin", "Tidak Vaksin")
+
+# Menghitung proporsi
+proporsi1 <- prop.table(infeksi, margin = 1)
+
+# Mengubah format data untuk ggplot2
+data_plot1 <- as.data.frame(as.table(proporsi1))
+
+# Menambahkan total proporsi per kategori BBLR dan Tidak BBLR
+data_plot1$total_proporsi = prop.table(rowSums(infeksi))
+
+# Membuat plot
+ggplot(data_plot1, aes(x = Var1, y = Freq, fill = Var2, label = scales::percent(Freq))) + 
+  geom_bar(stat = "identity", position = "dodge", color = "black", size = 0.7) + 
+  geom_text(position = position_dodge(width = 0.9), vjust = -0.3) +  # Anotasi nilai proporsi
+  geom_line(aes(group = Var1, y = total_proporsi, color = Var1), linetype = "dashed", size = 1) + # Garis proporsi total
+  geom_point(aes(group = Var1, y = total_proporsi, color = Var1), size = 3) + # Titik pada garis total
+  scale_fill_brewer(palette = "Set1") +  # Warna lebih menarik
+  scale_color_manual(values = c("Vaksin" = "darkred", "Tidak Vaksin" = "darkblue")) +  # Warna garis total
+  labs(x = "Status Terinfeksi", y = "Proporsi", fill = "Status Terinfeksi", color = "Garis Total") + 
+  ggtitle("Proporsi Terinfeksi dan Tidak Terinfeksi Berdasarkan Status Vaksin") + 
+  theme_minimal() +
+  theme(legend.position = "top", 
+        plot.title = element_text(hjust = 0.5, size = 16, face = "bold"))  # Menambahkan judul
+```
+
+## Soal 2 : Keberhasilan Pengobatan Baru Terhadap Penyakit Jantung
+
+Penelitian dilakukan untuk menguji efektivitas pengobatan baru terhadap penyakit jantung
+
+|                     | **Membaik** | **Tidak Membaik** |
+|:-------------------:|:-----------:|:-----------------:|
+| **Pengobatan Baru** |      8      |         2         |
+| **Pengobatan Lama** |      5      |         5         |
+
+**Pertanyaan:** Apakah pengobatan baru menunjukkan perbedaan signifikan dalam keberhasilan pengobatan jantung dibandingan pengobatan lama?
+
+**Jawaban:**
+
+```{r}
+jantung <- matrix(c(8, 2, 5, 5), nrow = 2)
+colnames(jantung) <- c("Membaik", "Tidak Membaik")
+rownames(jantung) <-c("Pengobatan Baru", "Pengobatan Lama")
+fishtest_jantung <- fisher.test(jantung)
+fishtest_jantung
+```
+
+```{r}
+# Keputusan tolak atau terima H0
+if (fishtest_jantung$p.value < 0.05) {
+  print("Tolak H0: Ada perbedaan signifikan dalam keberhasilan pengobatan jantung dibandingan pengobatan lama")
+} else {
+  print("Terima H0: Tidak ada perbedaan signifikan dalam keberhasilan pengobatan jantung dibandingan pengobatan lama")
+}
+```
+
+Pasien yang mendapatkan pengobatan baru memiliki kemungkinan **3.71871** lebih besar untuk mengalami kondisi membaik dibandingkan dengan pasien yang tidak mendapatkan pengobatan tersebut.
+
+```{r}
+# Data
+jantung <- matrix(c(8, 2, 5, 5), nrow = 2)
+colnames(jantung) <- c("Membaik", "Tidak Membaik")
+rownames(jantung) <-c("Pengobatan Baru", "Pengobatan Lama")
+
+# Menghitung proporsi
+proporsi2 <- prop.table(jantung, margin = 1)
+
+# Mengubah format data untuk ggplot2
+data_plot2 <- as.data.frame(as.table(proporsi2))
+
+# Menambahkan total proporsi per kategori BBLR dan Tidak BBLR
+data_plot2$total_proporsi = prop.table(rowSums(jantung))
+
+# Membuat plot
+ggplot(data_plot2, aes(x = Var1, y = Freq, fill = Var2, label = scales::percent(Freq))) + 
+  geom_bar(stat = "identity", position = "dodge", color = "black", size = 0.7) + 
+  geom_text(position = position_dodge(width = 0.9), vjust = -0.3) +  # Anotasi nilai proporsi
+  geom_line(aes(group = Var1, y = total_proporsi, color = Var1), linetype = "dashed", size = 1) + # Garis proporsi total
+  geom_point(aes(group = Var1, y = total_proporsi, color = Var1), size = 3) + # Titik pada garis total
+  scale_fill_brewer(palette = "Set1") +  # Warna lebih menarik
+  scale_color_manual(values = c("Pengobatan Baru" = "darkred", "Pengobatan Lama" = "darkblue")) +  # Warna garis total
+  labs(x = "Status Penyakit", y = "Proporsi", fill = "Status Penyakit", color = "Garis Total") + 
+  ggtitle("Proporsi Membaik dan Tidak Membaik Berdasarkan Perbedaan Pengobatan") + 
+  theme_minimal() +
+  theme(legend.position = "top", 
+        plot.title = element_text(hjust = 0.5, size = 16, face = "bold"))  # Menambahkan judul
+```
+
+## Soal 3 : Kejadian Kecelakaan Lalu Lintas Berdasarkan Penggunaan Helm
+
+Tabel berikut menunjukkan jumlah kecelakaan lalu lintas berdasarkan apakah pengendara menggunakan helm atau tidak.
+
+|                            | **Kecelakaan** | **Tidak Kecelakaan** |
+|:--------------------------:|:--------------:|:--------------------:|
+|    **Menggunakan Helm**    |       7        |          20          |
+| **Tidak Menggunakan Helm** |       13       |          5           |
+
+**Pertanyaan:** Apakah ada hubungan yang signifikan antara penggunaan helm dan kejadian kecelakaan?
+
+**Jawaban:**
+
+```{r}
+kecelakaan <- matrix(c(7, 20, 13, 5), nrow = 2)
+colnames(kecelakaan) <- c("Kecelakaan", "Tidak Kecelakaan")
+rownames(kecelakaan) <-c("Menggunakan Helm", "Tidak Menggunakan Helm")
+fishtest_kecelakaan <- fisher.test(kecelakaan)
+fishtest_kecelakaan
+```
+
+```{r}
+# Keputusan tolak atau terima H0
+if (fishtest_kecelakaan$p.value < 0.05) {
+  print("Tolak H0: Ada hubungan yang signifikan antara penggunaan helm dan kejadian kecelakaan")
+} else {
+  print("Terima H0: Tidak ada hubungan yang signifikan antara penggunaan helm dan kejadian kecelakaan")
+}
+```
+
+Odds Ratio sebesar **0.1418821** menunjukkan bahwa pengguna helm memiliki kemungkinan yang jauh lebih rendah mengalami kecelakaan lalu lintas dibandingkan dengan seseorang yang tidak menggunakan helm.
+
+```{r}
+# Data
+kecelakaan <- matrix(c(7, 20, 13, 5), nrow = 2)
+colnames(kecelakaan) <- c("Kecelakaan", "Tidak Kecelakaan")
+rownames(kecelakaan) <-c("Menggunakan Helm", "Tidak Menggunakan Helm")
+
+# Menghitung proporsi
+proporsi3 <- prop.table(kecelakaan, margin = 1)
+
+# Mengubah format data untuk ggplot2
+data_plot3 <- as.data.frame(as.table(proporsi3))
+
+# Menambahkan total proporsi per kategori BBLR dan Tidak BBLR
+data_plot3$total_proporsi = prop.table(rowSums(kecelakaan))
+
+# Membuat plot
+ggplot(data_plot3, aes(x = Var1, y = Freq, fill = Var2, label = scales::percent(Freq))) + 
+  geom_bar(stat = "identity", position = "dodge", color = "black", size = 0.7) + 
+  geom_text(position = position_dodge(width = 0.9), vjust = -0.3) +  # Anotasi nilai proporsi
+  geom_line(aes(group = Var1, y = total_proporsi, color = Var1), linetype = "dashed", size = 1) + # Garis proporsi total
+  geom_point(aes(group = Var1, y = total_proporsi, color = Var1), size = 3) + # Titik pada garis total
+  scale_fill_brewer(palette = "Set1") +  # Warna lebih menarik
+  scale_color_manual(values = c("Menggunakan Helm" = "darkred", "Tidak Menggunakan Helm" = "darkblue")) +  # Warna garis total
+  labs(x = "Status Kecelakaan", y = "Proporsi", fill = "Status Kecelakaan", color = "Garis Total") + 
+  ggtitle("Proporsi Kecelakaan dan Tidak Kecelakaan Berdasarkan Penggunaan Helm") + 
+  theme_minimal() +
+  theme(legend.position = "top", 
+        plot.title = element_text(hjust = 0.5, size = 16, face = "bold"))  # Menambahkan judul
+```
+
+## Soal 4 : Keberhasilan Program Penurunan Berat Badan
+
+Data berikut mengukur keberhasilan program penurunan berat badan pada dua kelompok individu.
+
+|                             | **Berhasil** | Tidak Berhasil |
+|:---------------------------:|:------------:|:--------------:|
+|    **Mengikuti Program**    |      6       |       4        |
+| **Tidak Mengikuti Program** |      3       |       7        |
+
+**Pertanyaan:** Apakah program penurunan berat badan memiliki pengaruh signifikan terhadap keberhasilan penurunan berat badan?
+
+**Jawaban:**
+
+```{r}
+program <- matrix(c(6, 3, 4, 7), nrow = 2)
+colnames(program) <- c("Berhasil", "Tidak Berhasil")
+rownames(program) <-c("Mengikuti Program", "Tidak Mengikuti Program")
+program
+fishtest_program <- fisher.test(program)
+fishtest_program
+```
+
+```{r}
+# Keputusan tolak atau terima H0
+if (fishtest_program$p.value < 0.05) {
+  print("Tolak H0: Program penurunan berat badan memiliki pengaruh signifikan terhadap keberhasilan penurunan berat badan")
+} else {
+  print("Terima H0: Program penurunan berat badan tidak memiliki pengaruh signifikan terhadap keberhasilan penurunan berat badan")
+}
+```
+
+**Interpretasi:**
+
+```{r}
+# Data
+program <- matrix(c(6, 4, 3, 7), nrow = 2, byrow = TRUE)
+colnames(program) <- c("Berhasil", "Tidak Berhasil")
+rownames(program) <-c("Mengikuti Program", "Tidak Mengikuti Program")
+
+# Menghitung proporsi
+proporsi4 <- prop.table(program, margin = 1)
+
+# Mengubah format data untuk ggplot2
+data_plot4 <- as.data.frame(as.table(proporsi4))
+
+# Menambahkan total proporsi per kategori BBLR dan Tidak BBLR
+data_plot4$total_proporsi = prop.table(rowSums(program))
+
+# Membuat plot
+ggplot(data_plot4, aes(x = Var1, y = Freq, fill = Var2, label = scales::percent(Freq))) + 
+  geom_bar(stat = "identity", position = "dodge", color = "black", size = 0.7) + 
+  geom_text(position = position_dodge(width = 0.9), vjust = -0.3) +  # Anotasi nilai proporsi
+  geom_line(aes(group = Var1, y = total_proporsi, color = Var1), linetype = "dashed", size = 1) + # Garis proporsi total
+  geom_point(aes(group = Var1, y = total_proporsi, color = Var1), size = 3) + # Titik pada garis total
+  scale_fill_brewer(palette = "Set1") +  # Warna lebih menarik
+  scale_color_manual(values = c("Mengikuti Program" = "darkred", "Tidak Mengikuti Program" = "darkblue")) +  # Warna garis total
+  labs(x = "Status Keberhasilan", y = "Proporsi", fill = "Status Keberhasilan", color = "Garis Total") + 
+  ggtitle("Proporsi Berhasil dan Tidak Berhasil Berdasarkan Program Penurunan Berat Badan") + 
+  theme_minimal() +
+  theme(legend.position = "top", 
+        plot.title = element_text(hjust = 0.5, size = 16, face = "bold"))  # Menambahkan judul
+```
+
+## Soal 5 : Penggunaan Teknologi dalam Proses Pembelajaran
+
+Sebuah sekolah mengukur efektivitas penggunaan teknologi dalam pebelajaran dengan membandingkan hasil ujian.
+
+|                                 | **Lulus Ujian** | Tidak Lulus Ujian |
+|:-------------------------------:|:---------------:|:-----------------:|
+|    **Menggunakan Teknologi**    |       18        |         2         |
+| **Tidak Menggunakan Teknologi** |       15        |         5         |
+
+**Pertanyaan:** Apakah ada hubungan signifikan antara penggunaan teknologi dalam pembelajaran dan kelulusan ujian?
+
+**Jawaban:**
+
+```{r}
+belajar <- matrix(c(18, 2, 15, 5), nrow = 2)
+colnames(belajar) <- c("Lulus Ujian", "Tidak Lulus Ujian")
+rownames(belajar) <-c("Menggunakan Teknologi", "Tidak Menggunakan Teknologi")
+fishtest_belajar <- fisher.test(belajar)
+fishtest_belajar
+```
+
+```{r}
+# Keputusan tolak atau terima H0
+if (fishtest_belajar$p.value < 0.05) {
+  print("Tolak H0: Ada hubungan signifikan antara penggunaan teknologi dalam pembelajaran dan kelulusan ujian")
+} else {
+  print("Terima H0: Tidak ada hubungan signifikan antara penggunaan teknologi dalam pembelajaran dan kelulusan ujian")
+}
+```
+
+**Interpretasi:**
+
+```{r}
+# Data
+belajar <- matrix(c(18, 2, 15, 5), nrow = 2)
+colnames(belajar) <- c("Lulus Ujian", "Tidak Lulus Ujian")
+rownames(belajar) <-c("Menggunakan Teknologi", "Tidak Menggunakan Teknologi")
+
+# Menghitung proporsi
+proporsi5 <- prop.table(belajar, margin = 1)
+
+# Mengubah format data untuk ggplot2
+data_plot5 <- as.data.frame(as.table(proporsi5))
+
+# Menambahkan total proporsi per kategori BBLR dan Tidak BBLR
+data_plot5$total_proporsi = prop.table(rowSums(belajar))
+
+# Membuat plot
+ggplot(data_plot5, aes(x = Var1, y = Freq, fill = Var2, label = scales::percent(Freq))) + 
+  geom_bar(stat = "identity", position = "dodge", color = "black", size = 0.7) + 
+  geom_text(position = position_dodge(width = 0.9), vjust = -0.3) +  # Anotasi nilai proporsi
+  geom_line(aes(group = Var1, y = total_proporsi, color = Var1), linetype = "dashed", size = 1) + # Garis proporsi total
+  geom_point(aes(group = Var1, y = total_proporsi, color = Var1), size = 3) + # Titik pada garis total
+  scale_fill_brewer(palette = "Set1") +  # Warna lebih menarik
+  scale_color_manual(values = c("Menggunakan Teknologi" = "darkred", "Tidak Menggunakan Teknologi" = "darkblue")) +  # Warna garis total
+  labs(x = "Status Kelulusan", y = "Proporsi", fill = "Status Kelulusan", color = "Garis Total") + 
+  ggtitle("Proporsi Kelulusan Berdasarkan Penggunaan Teknologi") + 
+  theme_minimal() +
+  theme(legend.position = "top", 
+        plot.title = element_text(hjust = 0.5, size = 16, face = "bold"))  # Menambahkan judul
+```
+
+## Soal 6 : Efek Diet Terhadap Tekanan Darah Tinggi
+
+Penelitian dilakukan untuk melihat efek diet terhadap pengendalian tekanan darah tinggi.
+
+|                      | Tekanan Darah Normal | Tekanan Darah Tinggi |
+|:--------------------:|:--------------------:|:--------------------:|
+|    Mengikuti Diet    |          9           |          3           |
+| Tidak Mengikuti Diet |          4           |          10          |
+
+**Pertanyaan:** Apakah diet memiliki pengaruh signifikan terhadap pengendalian tekanan darah tinggi?
+
+**Jawaban:**
+
+```{r}
+darah <- matrix(c(9, 4, 3, 10), nrow = 2)
+colnames(darah) <- c("Tekanan Darah Normal", "Tekanan Darah Tinggi")
+rownames(darah) <-c("Mengikuti Diet", "Tidak Mengikuti Diet")
+darah
+fishtest_darah <- fisher.test(darah)
+fishtest_darah
+```
+
+```{r}
+# Keputusan tolak atau terima H0
+if (fishtest_darah$p.value < 0.05) {
+  print("Tolak H0: Diet memiliki pengaruh signifikan terhadap pengendalian tekanan darah tinggi")
+} else {
+  print("Terima H0: Diet tidak memiliki pengaruh signifikan terhadap pengendalian tekanan darah tinggi")
+}
+```
+
+Odds Ratio sebesar **6.846914** menunjukkan bahwa seseorang yang menjalani diet memiliki kemungkinan **6.85** kali lebih besar untuk memiliki tekanan darah yang normal dibandingkan dengan seseorang yang tidak menjalani program diet. Dengan demikian, bahwa program diet dapat mengurangi seseorang terkena tekanan darah tinggi.
+
+```{r}
+# Data
+darah <- matrix(c(9, 4, 3, 10), nrow = 2)
+colnames(darah) <- c("Tekanan Darah Normal", "Tekanan Darah Tinggi")
+rownames(darah) <-c("Mengikuti Diet", "Tidak Mengikuti Diet")
+
+# Menghitung proporsi
+proporsi6 <- prop.table(darah, margin = 1)
+
+# Mengubah format data untuk ggplot2
+data_plot6 <- as.data.frame(as.table(proporsi6))
+
+# Menambahkan total proporsi per kategori 
+data_plot6$total_proporsi = prop.table(rowSums(darah))
+
+# Membuat plot
+ggplot(data_plot6, aes(x = Var1, y = Freq, fill = Var2, label = scales::percent(Freq))) + 
+  geom_bar(stat = "identity", position = "dodge", color = "black", size = 0.7) + 
+  geom_text(position = position_dodge(width = 0.9), vjust = -0.3) +  # Anotasi nilai proporsi
+  geom_line(aes(group = Var1, y = total_proporsi, color = Var1), linetype = "dashed", size = 1) + # Garis proporsi total
+  geom_point(aes(group = Var1, y = total_proporsi, color = Var1), size = 3) + # Titik pada garis total
+  scale_fill_brewer(palette = "Set1") +  # Warna lebih menarik
+  scale_color_manual(values = c("Mengikuti Diet" = "darkred", "Tidak Mengikuti Diet" = "darkblue")) +  # Warna garis total
+  labs(x = "Status Tekanan Darah", y = "Proporsi", fill = "Status Tekanan Darah", color = "Garis Total") + 
+  ggtitle("Proporsi Tekanan Darah Berdasarkan Efek Diet") + 
+  theme_minimal() +
+  theme(legend.position = "top", 
+        plot.title = element_text(hjust = 0.5, size = 16, face = "bold"))  # Menambahkan judul
+```
+
+## Soal 7 : Keterlibatan Orang Tua dan Prestasi Akademik
+
+Data berikut membandingkan prestasi akademik siswa berdasarkan keterlibatan orang tua dalam pendidikan mereka.
+
+|                              | Prestasi Baik | Prestasi Buruk |
+|:----------------------------:|:-------------:|:--------------:|
+|    **Orang Tua Terlibat**    |      10       |       5        |
+| **Orang Tua Tidak Terlibat** |       4       |       11       |
+
+**Pertanyaan:** Apakah keterlibatan orang tua dalam pendidikan memiliki hubungan signifikan dengan prestasi akademik siswa?
+
+**Jawaban:**
+
+```{r}
+prestasi <- matrix(c(10, 5, 4, 11), nrow = 2)
+colnames(prestasi) <- c("Prestasi Baik", "Prestasi Buruk")
+rownames(prestasi) <-c("Orang Tua Terlibat", "Orang Tua Tidak Terlibat")
+fishtest_prestasi <- fisher.test(prestasi)
+fishtest_prestasi
+```
+
+```{r}
+# Keputusan tolak atau terima H0
+if (fishtest_prestasi$p.value < 0.05) {
+  print("Tolak H0: Keterlibatan orang tua dalam pendidikan memiliki hubungan signifikan dengan prestasi akademik siswa")
+} else {
+  print("Terima H0: Keterlibatan orang tua dalam pendidikan tidak memiliki hubungan signifikan dengan prestasi akademik siswa")
+}
+```
+
+Odds Ratio sebesar **5.159851** menunjukkan bahwa keterlibatan orang tua memiliki kemungkinan **5.15** kali lebih besar untuk meningkatkan prestasi akademik siswa dibandingan orang tua yang tidak terlibat.
+
+```{r}
+# Data
+prestasi <- matrix(c(10, 5, 4, 11), nrow = 2)
+colnames(prestasi) <- c("Prestasi Baik", "Prestasi Buruk")
+rownames(prestasi) <-c("Orang Tua Terlibat", "Orang Tua Tidak Terlibat")
+
+# Menghitung proporsi
+proporsi7 <- prop.table(prestasi, margin = 1)
+
+# Mengubah format data untuk ggplot2
+data_plot7 <- as.data.frame(as.table(proporsi7))
+
+# Menambahkan total proporsi per kategori 
+data_plot7$total_proporsi = prop.table(rowSums(prestasi))
+
+# Membuat plot
+ggplot(data_plot7, aes(x = Var1, y = Freq, fill = Var2, label = scales::percent(Freq))) + 
+  geom_bar(stat = "identity", position = "dodge", color = "black", size = 0.7) + 
+  geom_text(position = position_dodge(width = 0.9), vjust = -0.3) +  # Anotasi nilai proporsi
+  geom_line(aes(group = Var1, y = total_proporsi, color = Var1), linetype = "dashed", size = 1) + # Garis proporsi total
+  geom_point(aes(group = Var1, y = total_proporsi, color = Var1), size = 3) + # Titik pada garis total
+  scale_fill_brewer(palette = "Set1") +  # Warna lebih menarik
+  scale_color_manual(values = c("Orang Tua Terlibat" = "darkred", "Orang Tua Tidak Terlibat" = "darkblue")) +  # Warna garis total
+  labs(x = "Prestasi Akademik", y = "Proporsi", fill = "Prestasi Akademik", color = "Garis Total") + 
+  ggtitle("Proporsi Prestasi Akademik Berdasarkan Keterlibatan Orang Tua dalam Pendidikan") + 
+  theme_minimal() +
+  theme(legend.position = "top", 
+        plot.title = element_text(hjust = 0.5, size = 16, face = "bold"))  # Menambahkan judul
+```
+
+## Soal 8 : Pengaruh Konseling Terhadap Penurunan Tingkat Depresi
+
+Penelitian mengukur efek konseling pada tingkat depresi di antara individu yang menerima dan tidak menerima konseling.
+
+|                                 | Depresi Menurun | Depresi Tidak Menurun |
+|:-------------------------------:|:---------------:|:---------------------:|
+|    **Mendapatkan Konseling**    |       12        |           3           |
+| **Tidak Mendapatkan Konseling** |        5        |           8           |
+
+**Pertanyaan:** Apakah konseling memiliki pengaruh signifikan terhadap penurunan tingkat depresi?
+
+**Jawaban:**
+
+```{r}
+konseling <- matrix(c(12, 3, 5, 8), nrow = 2)
+colnames(konseling) <- c("Depresi Menurun", "Depresi Tidak Menurun")
+rownames(konseling) <-c("Mendapatkan Konseling", "Tidak Mendapatkan Konseling")
+fishtest_konseling <- fisher.test(konseling)
+fishtest_konseling
+```
+
+```{r}
+# Keputusan tolak atau terima H0
+if (fishtest_konseling$p.value < 0.05) {
+  print("Tolak H0: Konseling memiliki pengaruh signifikan terhadap penurunan tingkat depresi")
+} else {
+  print("Terima H0: Konseling tidak memiliki pengaruh signifikan terhadap penurunan tingkat depresi")
+}
+```
+
+**Interpretasi:**
+
+```{r}
+# Data
+konseling <- matrix(c(12, 3, 5, 8), nrow = 2)
+colnames(konseling) <- c("Depresi Menurun", "Depresi Tidak Menurun")
+rownames(konseling) <-c("Mendapatkan Konseling", "Tidak Mendapatkan Konseling")
+
+# Menghitung proporsi
+proporsi8 <- prop.table(konseling, margin = 1)
+
+# Mengubah format data untuk ggplot2
+data_plot8 <- as.data.frame(as.table(proporsi8))
+
+# Menambahkan total proporsi per kategori 
+data_plot8$total_proporsi = prop.table(rowSums(konseling))
+
+# Membuat plot
+ggplot(data_plot8, aes(x = Var1, y = Freq, fill = Var2, label = scales::percent(Freq))) + 
+  geom_bar(stat = "identity", position = "dodge", color = "black", size = 0.7) + 
+  geom_text(position = position_dodge(width = 0.9), vjust = -0.3) +  # Anotasi nilai proporsi
+  geom_line(aes(group = Var1, y = total_proporsi, color = Var1), linetype = "dashed", size = 1) + # Garis proporsi total
+  geom_point(aes(group = Var1, y = total_proporsi, color = Var1), size = 3) + # Titik pada garis total
+  scale_fill_brewer(palette = "Set1") +  # Warna lebih menarik
+  scale_color_manual(values = c("Konseling" = "darkred", "Tidak Konseling" = "darkblue")) +  # Warna garis total
+  labs(x = "Tingkat Depresi", y = "Proporsi", fill = "Tingkat Depresi", color = "Garis Total") + 
+  ggtitle("Proporsi Tingkat Depresi Berdasarkan Kehadiran Konseling") + 
+  theme_minimal() +
+  theme(legend.position = "top", 
+        plot.title = element_text(hjust = 0.5, size = 16, face = "bold"))  # Menambahkan judul
+```
+
+## Soal 9 : Pengaruh Latihan Terhadap Penyembuhan Cedera Olahraga
+
+Penelitian dilakukan untuk melihat efek latihan fisik terhadap penyembuhan cedera olahraga
+
+|                   | Sembuh | Tidak Sembuh |
+|:-----------------:|:------:|:------------:|
+|    **Latihan**    |   7    |      2       |
+| **Tidak Latihan** |   4    |      6       |
+
+**Pertanyaan:** Apakah latihan fisik memiliki hubungan signifikan dengan penyembuhan cedera olahraga?
+
+**Jawaban:**
+
+```{r}
+latihan <- matrix(c(7, 4, 2, 6), nrow = 2)
+colnames(latihan) <- c("Sembuh", "Tidak Sembuh")
+rownames(latihan) <-c("Latihan", "Tidak latihan")
+latihan
+fishtest_latihan <- fisher.test(latihan)
+fishtest_latihan
+```
+
+```{r}
+# Keputusan tolak atau terima H0
+if (fishtest_latihan$p.value < 0.05) {
+  print("Tolak H0: Latihan fisik memiliki hubungan signifikan dengan penyembuhan cedera olahraga")
+} else {
+  print("Terima H0: Latihan fisik tidak memiliki hubungan signifikan dengan penyembuhan cedera olahraga")
+}
+```
+
+**Interpretasi:**
+
+```{r}
+# Data
+latihan <- matrix(c(7, 4, 2, 6), nrow = 2)
+colnames(latihan) <- c("Sembuh", "Tidak Sembuh")
+rownames(latihan) <-c("Latihan", "Tidak latihan")
+
+# Menghitung proporsi
+proporsi9 <- prop.table(latihan, margin = 1)
+
+# Mengubah format data untuk ggplot2
+data_plot9 <- as.data.frame(as.table(proporsi9))
+
+# Menambahkan total proporsi per kategori 
+data_plot9$total_proporsi = prop.table(rowSums(latihan))
+
+# Membuat plot
+ggplot(data_plot9, aes(x = Var1, y = Freq, fill = Var2, label = scales::percent(Freq))) + 
+  geom_bar(stat = "identity", position = "dodge", color = "black", size = 0.7) + 
+  geom_text(position = position_dodge(width = 0.9), vjust = -0.3) +  # Anotasi nilai proporsi
+  geom_line(aes(group = Var1, y = total_proporsi, color = Var1), linetype = "dashed", size = 1) + # Garis proporsi total
+  geom_point(aes(group = Var1, y = total_proporsi, color = Var1), size = 3) + # Titik pada garis total
+  scale_fill_brewer(palette = "Set1") +  # Warna lebih menarik
+  scale_color_manual(values = c("Latihan" = "darkred", "Tidak Latihan" = "darkblue")) +  # Warna garis total
+  labs(x = "Penyembuhan", y = "Proporsi", fill = "Penyembuhan", color = "Garis Total") + 
+  ggtitle("Proporsi Penyembuhan Cedera Berdasarkan Efek Latihan Fisik") + 
+  theme_minimal() +
+  theme(legend.position = "top", 
+        plot.title = element_text(hjust = 0.5, size = 16, face = "bold"))  # Menambahkan judul
+```
+
+## Soal 10 : Efektivitas Penggunaan Antiobiotik
+
+Penelitian dilakukan untuk melihat efektivitas penggunaan antibiotik dalam menyembuhkan infeksi.
+
+|                                  | Sembuh | Tidak Sembuh |
+|:--------------------------------:|:------:|:------------:|
+|    **Menggunakan Antibiotik**    |   15   |      3       |
+| **Tidak Menggunakan Antibiotik** |   7    |      8       |
+
+**Pertanyaan:** Apakah penggunaan antibiotik memiliki pengaruh signifikan terhadap kesembuhan dari infeksi?
+
+**Jawaban:**
+
+```{r}
+antibiotik <- matrix(c(15, 7, 3, 8), nrow = 2)
+colnames(antibiotik) <- c("Sembuh", "Tidak Sembuh")
+rownames(antibiotik) <-c("Menggunakan Antibiotik", "Tidak Menggunakan Antibiotik")
+antibiotik
+fishtest_antibiotik <- fisher.test(antibiotik)
+fishtest_antibiotik
+```
+
+```{r}
+# Keputusan tolak atau terima H0
+if (fishtest_antibiotik$p.value < 0.05) {
+  print("Tolak H0: Penggunaan antibiotik memiliki pengaruh signifikan terhadap kesembuhan dari infeksi")
+} else {
+  print("Terima H0: Penggunaan antibiotik tidak memiliki pengaruh signifikan terhadap kesembuhan dari infeksi")
+}
+```
+
+**Interpretasi:**
+
+```{r}
+# Data
+antibiotik <- matrix(c(15, 7, 3, 8), nrow = 2)
+colnames(antibiotik) <- c("Sembuh", "Tidak Sembuh")
+rownames(antibiotik) <-c("Menggunakan Antibiotik", "Tidak Menggunakan Antibiotik")
+
+# Menghitung proporsi
+proporsi10 <- prop.table(antibiotik, margin = 1)
+
+# Mengubah format data untuk ggplot2
+data_plot10 <- as.data.frame(as.table(proporsi10))
+
+# Menambahkan total proporsi per kategori 
+data_plot10$total_proporsi = prop.table(rowSums(antibiotik))
+
+# Membuat plot
+ggplot(data_plot10, aes(x = Var1, y = Freq, fill = Var2, label = scales::percent(Freq))) + 
+  geom_bar(stat = "identity", position = "dodge", color = "black", size = 0.7) + 
+  geom_text(position = position_dodge(width = 0.9), vjust = -0.3) +  # Anotasi nilai proporsi
+  geom_line(aes(group = Var1, y = total_proporsi, color = Var1), linetype = "dashed", size = 1) + # Garis proporsi total
+  geom_point(aes(group = Var1, y = total_proporsi, color = Var1), size = 3) + # Titik pada garis total
+  scale_fill_brewer(palette = "Set1") +  # Warna lebih menarik
+  scale_color_manual(values = c("Menggunakan Antibiotik" = "darkred", "Tidak Menggunakan Antibiotik" = "darkblue")) +  # Warna garis total
+  labs(x = "Penyembuhan", y = "Proporsi", fill = "Penyembuhan", color = "Garis Total") + 
+  ggtitle("Proporsi Penyembuhan Infeksi Berdasarkan Penggunaan Antibiotik") + 
+  theme_minimal() +
+  theme(legend.position = "top", 
+        plot.title = element_text(hjust = 0.5, size = 16, face = "bold"))  # Menambahkan judul
+```
