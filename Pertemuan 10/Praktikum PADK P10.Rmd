@@ -1,0 +1,310 @@
+---
+title: "Praktikum PADK P10"
+author: "Anindya Septyani G1401221074"
+date: "2024-10-30"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Model Regresi Logistik
+
+# **1. Pendahuluan**
+
+## 1.1 Definisi dan Pentingnya Peubah Respon Biner
+
+Peubah respon biner adalah variabel yang hanya memiliki dua kemungkinan hasil, seperti “ya/tidak”, “sukses/gagal”, atau “lulus/tidak lulus”. Regresi logistik digunakan ketika kita ingin memprediksi probabilitas terjadinya salah satu dari dua kemungkinan hasil berdasarkan satu atau lebih peubah penjelas (predictors). Model ini sering digunakan dalam berbagai bidang seperti kesehatan, keuangan, dan penelitian sosial.
+
+## 1.2 Pendugaan Peluang Binomial dan Keterbatasannya
+
+Pendugaan peluang binomial sering digunakan untuk data biner, tetapi memiliki keterbatasan, terutama dalam variabilitas peubah penjelas. Regresi logistik menawarkan solusi dengan menggunakan link log odds sebagai fungsi linear dari peubah penjelas, yang mengatasi nilai prediksi dalam rentang 0 hingga 1.
+
+## 1.3 Pemodelan dengan Regresi Klasik
+
+Dalam regresi klasik atau regresi linear, prediksi dapat berada di luar rentang [0, 1], yang tidak sesuai untuk probabilitas. Oleh karena itu, regresi logistik digunakan karena model ini secara alami membatasi prediksi dalam rentang yang diinginkan.
+
+# 2. Regresi Logistik
+
+## 2.1 Dasar Regresi Logistik
+
+Regresi logistik digunakan untuk memodelkan hubungan antara satu atau lebih peubah penjelas (predictor) dengan peubah respon biner. Tujuan utama adalah memprediksi probabilitas kejadian tertentu berdasarkan peubah penjelas. Regresi logistik sangat efektif dalam kasus di mana peubah respon bersifat biner.
+
+### 2.1.1 Model Logit
+
+Model Logit menghubungkan log odds dari probabilitas kejadian $(\pi(x))$ dengan kombinasi linear dari peubah penjelas $(X)$:
+
+$$
+\text{logit}(\pi)x))=\left(\frac{\pi(x)}{1-\pi(x)} \right)=\beta_0+\beta_1X_1+...+\beta_kX_k
+$$
+
+## 2.2 Interpretasi Koefisien $\beta$
+
+Koefisien dalam regresi logistik $(\beta)$ diinterpretasikan sebagai perubahan log odds dari kejadian yang diinginkan untuk setiap perubahan satu unit dalam peubah $X$. Ini adalah langkah penting karena memberikan wawasan tentang kekuatan dan arah hubungan antara peubah penjelas dan respon.
+
+### 2.2.1 Interpretasi Odds
+
+Odds $O$ adalah perbandingan antara kemungkinan terjadinya suatu kejadian dan tidak terjadinya kejadian tersebut. Dalam regresi logistik:
+
+$$
+O(x)=\frac{\pi(x)}{1-\pi(x)}=e^{\beta_0+\beta_1X_1+...+\beta_kX_k}
+$$
+
+**Contoh:** Misalkan, model regresi logistik menghasilkan $\beta_1=0.0055$, ini berarti bahwa setiap kenaikan satu unit dalam jumlah tagihan meningkatkan odds gagal bayar sebesar $e^{0.0055}\approx1.0055$.
+
+# 3. Uji Parameter Model
+
+## 3.1 Uji Simultan (Likelihood Ratio Test)
+
+Uji ini digunakan untuk menguji apakah semua peubah penjelas dalam model memiliki pengaruh yang signifikan secara bersama-sama. Ini membantu kita memahami apakah model yang kita gunakan sudah cukup baik atau tidak.
+
+Statistik uji $G$ adalah:
+
+$$
+G=2 \times (\text{Log-likelihood tanpa peubah bebas/Log-likelihood dengan peubah bebas}) 
+$$
+
+Keputusan diambil dengan membandingkan nilai $G$ dengan distribusi $\chi^2$ dengan derajat kebebasan $k$.
+
+## 3.2 Uji Parsial (Wald Test)
+
+Uji Wald digunakan untuk menguji signifikansi dari masing-masing koefisien secara parsial. Ini penting untuk mengetahui apakah setiap peubah penjelas secara individual memberikan kontribusi signifikan terhadap model.
+
+Statistik uji Wald adalah:
+
+$$
+Z^2 = \left( \frac{\hat{\beta}_i}{\text{SE}(\hat{\beta}_i)} \right)^2$$
+
+## 3.3 Uji Hosmer-Lemeshow
+
+Uji Hosmer-Lemeshow digunakan untuk menguji kebaikan model (goodness-of-fit). Ini mengukur seberapa baik model prediktif sesuai dengan data yang diamati. Hipotesis nol adalah bahwa model cocok dengan data.
+
+Statistik uji Hosmer-Lemeshow adalah:
+
+$$
+\chi^2 = \sum_{g=1}^{G} \frac{(O_g - E_g)^2}{E_g \left( 1 - E_g \right)}
+$$
+
+# Contoh Soal
+
+Tabel berikut menunjukkan suhu (°F) saat penerbangan dan apakah pesawat mengalami gangguan termal ketika penerbangan. Uji pengaruh suhu penerbangan terhadap gangguan termal menggunakan uji Wald dan likelihood ratio.
+
+![](images/clipboard-3313039469.png)
+
+Keterangan:
+
+-   **Ft** = nomor penerbangan
+-   **Temperature** = suhu (°F)
+-   **TD** = gangguan termal (1 = ya, 0 = tidak)
+
+**Uji Wald**
+
+**Implementasi di R**
+
+```{r}
+# Memasukkan data
+data_penerbangan <- data.frame(
+  Ft = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23),
+  Temperature = c(66, 70, 69, 68, 67, 72, 73, 70, 57, 63, 70, 78, 67, 53, 67, 75, 70, 81, 76, 79, 75, 76, 58),
+  TD = c(0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1)
+)
+
+# Model regresi logistik
+model_logit <- glm(TD ~ Temperature, data = data_penerbangan, family = binomial)
+
+# Hasil model
+summary(model_logit)
+```
+
+```{r}
+# Uji Wald (t-statistics atau z-statistics)
+wald_statistics <- summary(model_logit)$coefficients[2, "z value"]
+wald_statistics
+```
+
+**Hipotesis**
+
+-   $H_0:\beta_1=0$ (Tidak signifikan)
+-   $H_0:\beta_1\neq0$ (Signifikan)
+
+**Statistik Uji**
+
+-   $Z^2=4.6008$
+-   $P-Value=0.0320$
+
+**Keputusan**
+
+Tolak $H_0$
+
+**Interpretasi**
+
+Cukup bukti untuk menyatakan bahwa suhu pada saat penerbangan berpengaruh signifikan terhadap gangguan termal pada taraf nyata 5%.
+
+**Uji Likelihood Ratio**
+
+```{r}
+# Uji Likelihood Ratio
+model_terbatas <- glm(TD ~ 1, data = data_penerbangan, family = binomial)
+loglik_terbatas <- logLik(model_terbatas)
+loglik_penuh <- logLik(model_logit)
+LR_statistic <- -2 * (loglik_terbatas - loglik_penuh)
+LR_statistic
+```
+
+```{r}
+## Derajat kebebasan untuk uji Likelihood Ratio
+df <- model_terbatas$df.residual - model_logit$df.residual
+
+# Menghitung p-value
+p_value_LR <- pchisq(LR_statistic, df = df, lower.tail = FALSE)
+p_value_LR 
+```
+
+**Hipotesis**
+
+-   $H_0:\beta_1=0$ (Tidak signifikan)
+-   $H_0:\beta_1\neq0$ (Signifikan)
+
+**Statistik Uji**
+
+-   $G=7.9520$
+-   $P-Value=0.0048$
+
+**Keputusan**
+
+Tolak $H_0$
+
+**Interpretasi**
+
+Cukup bukti untuk menyatakan bahwa suhu pada saat penerbangan berpengaruh signifikan terhadap gangguan termal pada taraf nyata 5%.
+
+# Latihan Soal
+
+## Soal 4: Pengaruh Konsumsi Air terhadap Dehidrasi
+
+Tabel berikut menunjukkan jumlah liter air yang dikonsumsi per hari dan apakah seseorang mengalami pengaruh konsumsi air terhadap kejadian dehidrasi menggunakan uji Wald dan Likelihood Ratio.
+
+| Orang | Liter Air/Hari | Dehidrasi (1=Iya, 0=Tidak) |
+|:-----:|:--------------:|:--------------------------:|
+|   1   |      2.0       |             0              |
+|   2   |      1.5       |             1              |
+|   3   |      2.5       |             0              |
+|   4   |      1.0       |             1              |
+|   5   |      3.0       |             0              |
+|   6   |      0.8       |             1              |
+|   7   |      2.2       |             0              |
+|   8   |      1.7       |             1              |
+|   9   |      3.5       |             0              |
+|  10   |      1.2       |             1              |
+
+**Uji Wald**
+
+```{r}
+# Memasukkan data 
+data_Lulus <- data.frame(
+  Orang = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+  Belajar = c(5, 8, 4, 10, 7, 12, 3, 9, 6, 11),
+  Lulus = c(0, 1, 0, 1, 0, 1, 0, 1, 0, 1)
+) 
+
+# Model regresi logistik 
+model_logit3 <- glm(Lulus~Belajar, data = data_Lulus, family = binomial)  
+summary(model_logit3)
+```
+
+## Soal 8: Pengaruh Konsumsi Gula terhadap Risiko Diabetes
+
+Tabel berikut menunjukkan jumlah konsumsi gula per hari (dalam gram) dan apakah seseorang didiagnosis dengan diabetes. Uji pengaruh konsumsi gula terhadap risiko diabetes menggunakan uji Wald dan likelihood ratio.
+
+| Orang | Gula (Gram/Hari) | Diabetes (1=Iya, 0=Tidak) |
+|:-----:|:----------------:|:-------------------------:|
+|   1   |        30        |             0             |
+|   2   |        50        |             1             |
+|   3   |        40        |             0             |
+|   4   |        60        |             1             |
+|   5   |        45        |             0             |
+|   6   |        70        |             1             |
+|   7   |        25        |             0             |
+|   8   |        55        |             1             |
+|   9   |        35        |             0             |
+|  10   |        65        |             1             |
+
+**Uji Wald**
+
+```{r}
+# Memasukkan data 
+data_diabetes <- data.frame(
+  Orang = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+  Gula = c(30, 50, 40, 60, 45, 70, 25, 55, 35, 65),
+  Diabetes = c(0, 1, 0, 1, 0, 1, 0, 1, 0, 1)
+) 
+
+# Model regresi logistik 
+model_logit8 <- glm(Diabetes~Gula, data = data_diabetes, family = binomial)  
+summary(model_logit8)
+```
+
+```{r}
+# Uji Wald (t-statistics atau z-statistics) 
+wald_statistics8 <- summary(model_logit8)$coefficients[2, "z value"] 
+wald_statistics8
+z2_8 <- (wald_statistics8)^2
+z2_8
+```
+
+**Hipotesis**
+
+-   $H_0:\beta_1=0$ (Tidak signifikan)
+-   $H_0:\beta_1\neq0$ (Signifikan)
+
+**Statistik Uji**
+
+-   $Z^2=0.000005$
+-   $P-Value=0.999$
+
+**Keputusan**
+
+Terima $H_0$
+
+**Interpretasi**
+
+Tidak cukup bukti untuk menyatakan bahwa jumlah konsumsi gula berpengaruh terhadap risiko penyakit diabetes pada taraf nyata 5%.
+
+**Uji Likelihood Ratio**
+
+```{r}
+ # Uji Likelihood Ratio 
+model_terbatas8 <- glm(Diabetes~1, data = data_diabetes, family = binomial) 
+loglik_terbatas8 <- logLik(model_terbatas8) 
+loglik_penuh8 <- logLik(model_logit8) 
+LR_statistic8 <- -2 * (loglik_terbatas8 - loglik_penuh8)
+LR_statistic8
+```
+
+```{r}
+## Derajat kebebasan untuk uji Likelihood Ratio
+df <- model_terbatas8$df.residual - model_logit8$df.residual
+
+# Menghitung p-value
+p_value_LR8 <- pchisq(LR_statistic8, df = df, lower.tail = FALSE)
+p_value_LR8 
+```
+
+**Hipotesis**
+
+-   $H_0:\beta_1=0$ (Tidak signifikan)
+-   $H_0:\beta_1\neq0$ (Signifikan)
+
+**Statistik Uji**
+
+-   $G=13.862$
+-   $P-Value=0.00019$
+
+**Keputusan**
+
+Tolak $H_0$
+
+**Interpretasi**
+
+Cukup bukti untuk menyatakan bahwa jumlah konsumsi gula berpengaruh terhadap risiko penyakit diabetes pada taraf nyata 5%.
